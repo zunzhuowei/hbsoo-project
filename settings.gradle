@@ -1,3 +1,8 @@
 rootProject.name = 'hbsoo-project'
 include 'hbsoo-utils'
+include 'hbsoo-netty-server'
+include 'hbsoo-netty-client'
+include 'hbsoo-netty-codec'
+include 'hbsoo-netty-handler'
+include 'hbsoo-sample'
 

@@ -10,10 +10,10 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/public' }
         mavenCentral()
     }
-    /*dependencies {
+    dependencies {
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.1.8.RELEASE'
         classpath 'org.springframework:springloaded:1.2.1.RELEASE'
-    }*/
+    }
 }
 
 
@@ -31,14 +31,26 @@ subprojects {
 
     ext{
         profile = System.getProperty("profile") ?: "dev"
-        groovy = 'org.codehaus.groovy:groovy-all:2.3.11'
+        //groovy = 'org.codehaus.groovy:groovy-all:2.3.11'
         junit = [group: 'junit', name: 'junit', version: '4.12']
         commons = [group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0']
         commonsio = [group: 'commons-io', name: 'commons-io', version: '2.11.0']
+        nettyall = [group: 'io.netty', name: 'netty-all', version: '4.1.66.Final']
+        springboot = [group: 'org.springframework.boot', name: 'spring-boot', version: '2.5.3']
+        spring_boot_autoconfigure = [group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.5.3']
     }
 
     jar {
         manifest.attributes provider: 'gradle'
+    }
+
+    dependencies {
+        implementation 'org.codehaus.groovy:groovy-all:2.3.11'
+        implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+        implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.5'
+        implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+        implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+        annotationProcessor 'org.projectlombok:lombok:1.18.20'
     }
 
     // 该模块使用compileGroovy任务对Java和Groovy代码进行联合编译。

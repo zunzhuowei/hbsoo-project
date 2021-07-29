@@ -1,0 +1,7 @@
+dependencies {
+    implementation junit
+    implementation nettyall
+    implementation springboot
+    implementation spring_boot_autoconfigure
+    implementation project(':hbsoo-netty-server')
+}

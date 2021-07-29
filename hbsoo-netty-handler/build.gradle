@@ -1,8 +1,4 @@
-plugins {
-
-}
-
-
 dependencies {
     implementation junit
+    implementation nettyall
 }
