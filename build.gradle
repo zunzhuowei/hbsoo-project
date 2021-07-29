@@ -1,0 +1,50 @@
+allprojects {
+    group = 'com.hbsoo'
+    version = '1.0.0'
+
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+    /*dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.1.8.RELEASE'
+        classpath 'org.springframework:springloaded:1.2.1.RELEASE'
+    }*/
+}
+
+
+// 子项目模块配置
+subprojects {
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+    sourceCompatibility = '1.8'
+
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+
+    ext{
+        profile = System.getProperty("profile") ?: "dev"
+        groovy = 'org.codehaus.groovy:groovy-all:2.3.11'
+        junit = [group: 'junit', name: 'junit', version: '4.12']
+        commons = [group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0']
+        commonsio = [group: 'commons-io', name: 'commons-io', version: '2.11.0']
+    }
+
+    jar {
+        manifest.attributes provider: 'gradle'
+    }
+
+    // 该模块使用compileGroovy任务对Java和Groovy代码进行联合编译。
+    sourceSets {
+        main.groovy.srcDirs += "src/main/java"
+        main.java.srcDirs = []
+    }
+
+}
