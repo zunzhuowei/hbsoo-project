@@ -1,4 +1,8 @@
 dependencies {
     implementation junit
     implementation nettyall
+    implementation springboot
+    implementation project(':hbsoo-netty-codec')
+    implementation project(':hbsoo-commons')
+    implementation project(":hbsoo-netty-message")
 }

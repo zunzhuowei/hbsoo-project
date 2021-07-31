@@ -51,6 +51,7 @@ subprojects {
         implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
         implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
         annotationProcessor 'org.projectlombok:lombok:1.18.20'
+        implementation spring_boot_autoconfigure
     }
 
     // 该模块使用compileGroovy任务对Java和Groovy代码进行联合编译。
