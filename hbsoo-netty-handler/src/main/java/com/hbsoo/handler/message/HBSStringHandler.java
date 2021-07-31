@@ -1,5 +1,6 @@
 package com.hbsoo.handler.message;
 
+import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.utils.SpringBeanFactory;
 import com.hbsoo.msg.annotation.StrHandler;
 import com.hbsoo.msg.model.HBSMessage;
@@ -19,8 +20,8 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HBSMessage<String> msg) throws Exception {
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
-        final List<MessageHandler> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageHandler.class, StrHandler.class);
-        for (MessageHandler handler : handlers) {
+        final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, StrHandler.class);
+        for (MessageRouter handler : handlers) {
             final StrHandler httpHandler = handler.getClass().getAnnotation(StrHandler.class);
             final int value = httpHandler.value();
             final short msgType = msg.getHeader().getMsgType();

@@ -41,9 +41,9 @@ public class NettyServerAutoConfiguration {
 
     @Bean("serverHandler")
     public Consumer<ChannelPipeline> serverHandler(@Qualifier("messageHandler") List<CustomChannelHandler> handlers) {
+        log.info("Consumer<ChannelPipeline> handlers --::{}", handlers);
         return pip -> {
             for (CustomChannelHandler handler : handlers) {
-                log.info("Consumer<ChannelPipeline> handler --::{}", handler);
                 final List<ChannelHandler> codec = handler.codec();
                 if (Objects.nonNull(codec) && !codec.isEmpty()) {
                     pip.addLast(codec.toArray(new ChannelHandler[0]));
