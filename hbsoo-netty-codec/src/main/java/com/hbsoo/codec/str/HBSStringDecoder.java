@@ -2,6 +2,7 @@ package com.hbsoo.codec.str;
 
 import com.hbsoo.msg.model.HBSMessage;
 import com.hbsoo.msg.model.MsgHeader;
+import com.hbsoo.msg.model.StrMsgHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,7 +30,8 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
         }
         short magicNum = byteBuf.getShort(0);//magicNum
-        if (MsgHeader.STR_MAGIC_NUM != magicNum) {
+        // 如果不是定义的字符串类型消息，则往下抛
+        if (StrMsgHeader.STR_MAGIC_NUM != magicNum) {
             byteBuf.retain();
             out.add(byteBuf);
             //ctx.channel().closeFuture();
@@ -38,14 +40,14 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
         short version = byteBuf.getShort(2);//version
         int messageLength = byteBuf.getInt(4);//messageLength
         short messageType = byteBuf.getShort(8);//messageType
+        int contentLength = messageLength - MsgHeader.HEADER_LENGTH;
 
         MsgHeader header = new MsgHeader();
         header.setMagicNum(magicNum);
         header.setVersion(version);
-        header.setMsgLen(messageLength);
+        header.setMsgLen(contentLength);
         header.setMsgType(messageType);
 
-        int contentLength = messageLength - MsgHeader.HEADER_LENGTH;
         // 读出缓冲区中的消息头
         byteBuf.skipBytes(MsgHeader.HEADER_LENGTH);
 

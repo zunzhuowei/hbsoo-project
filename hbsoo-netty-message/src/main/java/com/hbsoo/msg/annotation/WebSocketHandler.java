@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @Component
 public @interface WebSocketHandler {
 
-    int value();
+    int[]  value();
 
 }

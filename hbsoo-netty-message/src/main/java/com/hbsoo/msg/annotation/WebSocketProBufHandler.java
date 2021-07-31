@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @Component
 public @interface WebSocketProBufHandler {
 
-    int value();
+    int[]  value();
 
 }
