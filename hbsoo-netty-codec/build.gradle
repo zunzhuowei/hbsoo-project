@@ -1,5 +1,5 @@
 dependencies {
     implementation junit
     implementation nettyall
-    implementation project(":hbsoo-netty-message")
+    api project(":hbsoo-netty-message")
 }
