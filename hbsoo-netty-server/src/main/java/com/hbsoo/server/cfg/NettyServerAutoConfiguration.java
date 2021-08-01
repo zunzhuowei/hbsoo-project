@@ -1,7 +1,7 @@
 package com.hbsoo.server.cfg;
 
-import com.hbsoo.handler.message.GlobalExceptionHandler;
-import com.hbsoo.handler.channel.CustomChannelHandler;
+import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
+import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.server.HbsooServer;
 import com.hbsoo.server.model.ServerCfg;
 import io.netty.channel.*;

@@ -1,4 +1,4 @@
-package com.hbsoo.handler.message;
+package com.hbsoo.handler.processor.message;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

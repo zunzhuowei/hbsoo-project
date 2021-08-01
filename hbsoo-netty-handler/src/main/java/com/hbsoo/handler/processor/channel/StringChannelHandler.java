@@ -1,8 +1,8 @@
-package com.hbsoo.handler.channel;
+package com.hbsoo.handler.processor.channel;
 
 import com.hbsoo.codec.str.HBSStringDecoder;
 import com.hbsoo.codec.str.HBSStringEncoder;
-import com.hbsoo.handler.message.HBSStringHandler;
+import com.hbsoo.handler.processor.message.HBSStringHandler;
 import com.hbsoo.msg.model.HBSMessage;
 import io.netty.channel.ChannelHandler;
 

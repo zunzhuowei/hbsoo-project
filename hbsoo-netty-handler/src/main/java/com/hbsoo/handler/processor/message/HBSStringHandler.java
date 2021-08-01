@@ -1,4 +1,4 @@
-package com.hbsoo.handler.message;
+package com.hbsoo.handler.processor.message;
 
 import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.utils.SpringBeanFactory;

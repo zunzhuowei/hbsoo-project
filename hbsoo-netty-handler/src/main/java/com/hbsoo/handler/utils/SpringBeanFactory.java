@@ -43,6 +43,13 @@ public final class SpringBeanFactory implements ApplicationContextAware {
         return context.getBeansOfType(clazz);
     }
 
+    /**
+     * 根据类型获取并且制定bean上必须有某个annotation
+     * @param clazz bean class
+     * @param annotationType annotation
+     * @param <T> bean type
+     * @return  bean
+     */
     public static <T> List<T> getBeansOfTypeWithAnnotation(Class<T> clazz, Class<? extends Annotation> annotationType) {
         final Map<String, T> beansOfType = getBeansOfType(clazz);
         if (!beansOfType.isEmpty()) {

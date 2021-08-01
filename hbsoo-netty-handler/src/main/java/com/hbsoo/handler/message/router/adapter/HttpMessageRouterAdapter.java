@@ -1,5 +1,6 @@
-package com.hbsoo.handler.message.router;
+package com.hbsoo.handler.message.router.adapter;
 
+import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.message.router.model.HttpParam;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -19,7 +20,7 @@ import java.util.*;
  * Created by zun.wei on 2021/7/31.
  */
 @Slf4j
-public abstract class HttpAbstractHandler implements MessageRouter<FullHttpRequest>{
+public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttpRequest> {
 
     @Override
     public void handler(ChannelHandlerContext ctx, FullHttpRequest req) {

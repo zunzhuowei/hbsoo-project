@@ -1,9 +1,9 @@
 package com.hbsoo.handler.cfg;
 
-import com.hbsoo.handler.channel.CustomChannelHandler;
+import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.handler.constants.HandlerType;
-import com.hbsoo.handler.channel.HttpChannelHandler;
-import com.hbsoo.handler.channel.StringChannelHandler;
+import com.hbsoo.handler.processor.channel.HttpChannelHandler;
+import com.hbsoo.handler.processor.channel.StringChannelHandler;
 import com.hbsoo.handler.utils.SpringBeanFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
