@@ -1,19 +1,23 @@
 package com.hbsoo.server;
 
-import com.hbsoo.server.channelInitializer.CustomChannelInitializer;
-import com.hbsoo.server.model.ServerCfg;
+import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
+import com.hbsoo.handler.cfg.ServerChannelHandlerRegister;
+import com.hbsoo.handler.constants.ClientProtocolType;
+import com.hbsoo.handler.constants.ServerProtocolType;
+import com.hbsoo.handler.processor.channel.CustomChannelHandler;
+import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2021/7/29.
@@ -22,43 +26,61 @@ import java.util.function.Consumer;
 public class HbsooServer {
 
 
-    private final ServerBootstrap bootstrap;
-    private final Integer port;
-    private final EventLoopGroup bossGroup;
-    private final EventLoopGroup workerGroup;
+    private ServerBootstrap bootstrap;
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
 
 
-    public HbsooServer(ServerCfg cfg) {
-        final Integer bossThreads = cfg.getBossThreads();
-        final Integer workerThreads = cfg.getWorkerThreads();
-        final Consumer<ChannelPipeline> pipelineConsumer = cfg.getPipelineConsumer();
-        final Integer port = cfg.getPort();
-
+    public HbsooServer create(Integer bossThreads, Integer workerThreads) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(bossThreads);
         EventLoopGroup workerGroup = new NioEventLoopGroup(workerThreads);
-
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new CustomChannelInitializer(pipelineConsumer));
-
-        this.port = port;
+                .handler(new LoggingHandler(LogLevel.INFO));
+        //.childHandler(new CustomChannelInitializer(pipelineConsumer));
         this.bossGroup = bossGroup;
         this.workerGroup = workerGroup;
         this.bootstrap = bootstrap;
+        return this;
     }
 
+    /**
+     * 选择协议类型
+     *
+     * @param types
+     * @return
+     */
+    public HbsooServer protocolType(ServerProtocolType... types) {
+        this.bootstrap.childHandler(
+                new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        for (ServerProtocolType type : types) {
+                            final CustomChannelHandler handler = ServerChannelHandlerRegister.get(type);
+                            if (Objects.nonNull(handler)) {
+                                // 编解码器
+                                final List<ChannelHandler> codec = handler.codec();
+                                if (Objects.nonNull(codec) && !codec.isEmpty()) {
+                                    pipeline.addLast(codec.toArray(new ChannelHandler[0]));
+                                }
+                                // 消息处理器
+                                final SimpleChannelInboundHandler handler1 = handler.handler();
+                                if (Objects.nonNull(handler1)) {
+                                    pipeline.addLast(handler1);
+                                }
+                            }
+                        }
+                        pipeline.addLast(new GlobalExceptionHandler());
+                    }
+                }
+        );
+        return this;
+    }
 
-//    public HbsooServer childHandler(ChannelHandler... channelHandlers) {
-//        for (ChannelHandler channelHandler : channelHandlers) {
-//            bootstrap.childHandler(channelHandler);
-//        }
-//        return this;
-//    }
-
-    public void start() throws InterruptedException {
-        Channel ch = bootstrap.bind(port).sync().channel();
+    public void start(Integer port) throws InterruptedException {
+        Channel ch = this.bootstrap.bind(port).sync().channel();
         log.info("Open your web browser and navigate to http://127.0.0.1:" + port + '/');
         ch.closeFuture().sync();
     }

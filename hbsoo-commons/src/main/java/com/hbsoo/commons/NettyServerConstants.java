@@ -10,4 +10,9 @@ public interface NettyServerConstants {
      */
     String HBSOO_SERVER_PROPERTIES_PREFIX = "hbsoo.netty.server";
 
+    /**
+     * 客户端配置前缀
+     */
+    String HBSOO_CLIENT_PROPERTIES_PREFIX = "hbsoo.netty.client";
+
 }

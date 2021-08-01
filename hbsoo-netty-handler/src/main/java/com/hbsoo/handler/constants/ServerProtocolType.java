@@ -3,7 +3,7 @@ package com.hbsoo.handler.constants;
 /**
  * Created by zun.wei on 2021/7/31.
  */
-public enum HandlerType {
+public enum ServerProtocolType {
 
     STRING,
     PROTOBUF,

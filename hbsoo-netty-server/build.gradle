@@ -1,5 +1,5 @@
 dependencies {
-    implementation junit
+    testImplementation junit
     implementation nettyall
     implementation springboot
     api project(':hbsoo-netty-handler')

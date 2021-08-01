@@ -1,6 +1,6 @@
-package com.hbsoo.server.cfg;
+package com.hbsoo.client.cfg;
 
-import com.hbsoo.server.HbsooServer;
+import com.hbsoo.client.HbsooClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Scope;
  */
 @Slf4j
 @Configuration
-public class NettyServerAutoConfiguration {
+public class NettyClientAutoConfiguration {
 
 
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @Bean(name = "hbsooServer")
-    public HbsooServer hbsooServer() {
-        return new HbsooServer();
+    @Bean(name = "hbsooClient")
+    public HbsooClient hbsooClient() {
+        return new HbsooClient();
     }
 
 
