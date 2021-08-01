@@ -1,3 +1,6 @@
+apply plugin: 'org.springframework.boot'
+
+
 dependencies {
     implementation junit
     implementation nettyall
@@ -5,3 +8,21 @@ dependencies {
     implementation spring_boot_autoconfigure
     implementation project(':hbsoo-netty-server')
 }
+
+
+// 发布 spring boot 应用到maven仓库中
+//publishing {
+//    publications {
+//        bootJava(MavenPublication) {
+//            artifact bootJar
+//        }
+//    }
+//    repositories {
+//        mavenLocal {
+//            url = localMavenDir
+//        }
+//        maven {
+//            url = localMavenDir
+//        }
+//    }
+//}

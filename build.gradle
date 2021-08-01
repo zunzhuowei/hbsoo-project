@@ -1,26 +1,32 @@
-allprojects {
-    group = 'com.hbsoo'
-    version = '1.0.0'
-
-}
-
 buildscript {
+    ext {
+        springBootVersion = "2.5.3"
+    }
     repositories {
         mavenLocal()
         maven { url 'https://maven.aliyun.com/repository/public' }
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.1.8.RELEASE'
-        classpath 'org.springframework:springloaded:1.2.1.RELEASE'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
 
 
-// 子项目模块配置
-subprojects {
+allprojects {
+    group = 'com.hbsoo'
+    version = '1.0.0'
+
     apply plugin: 'groovy'
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    //apply plugin: 'idea'
+    //apply plugin: 'io.spring.dependency-management'
+
+}
+
+// 子项目模块配置
+subprojects {
     sourceCompatibility = '1.8'
 
     repositories {
@@ -30,6 +36,10 @@ subprojects {
     }
 
     ext{
+        localMavenDir =
+                new File("E:\\maven\\repository").exists() ?
+                new File("E:\\maven\\repository").absolutePath :
+                'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
         profile = System.getProperty("profile") ?: "dev"
         //groovy = 'org.codehaus.groovy:groovy-all:2.3.11'
         junit = [group: 'junit', name: 'junit', version: '4.12']
@@ -59,5 +69,27 @@ subprojects {
         main.groovy.srcDirs += "src/main/java"
         main.java.srcDirs = []
     }
+
+    configurations {
+        println "--------------" + jar + "---------------"
+    }
+
+    // 发布jar到maven
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+        repositories {
+            mavenLocal {
+                url = localMavenDir
+            }
+            maven {
+                url = localMavenDir
+            }
+        }
+    }
+
 
 }
