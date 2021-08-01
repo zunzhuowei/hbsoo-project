@@ -29,12 +29,6 @@ allprojects {
 subprojects {
     sourceCompatibility = '1.8'
 
-    repositories {
-        mavenLocal()
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        mavenCentral()
-    }
-
     ext{
         localMavenDir =
                 new File("E:\\maven\\repository").exists() ?
@@ -48,13 +42,22 @@ subprojects {
         nettyall = [group: 'io.netty', name: 'netty-all', version: '4.1.66.Final']
         springboot = [group: 'org.springframework.boot', name: 'spring-boot', version: '2.5.3']
         spring_boot_autoconfigure = [group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.5.3']
+        spock='org.spockframework:spock-core:2.0-M5-groovy-3.0'
+        spock_junit4='org.spockframework:spock-junit4:2.0-M5-groovy-3.0'
     }
 
     jar {
         manifest.attributes provider: 'gradle'
     }
 
+    repositories {
+        mavenLocal{url localMavenDir}
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+
     dependencies {
+        testImplementation group: 'junit', name: 'junit', version: '4.12'
         implementation 'org.codehaus.groovy:groovy-all:2.3.11'
         implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
         implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.5'

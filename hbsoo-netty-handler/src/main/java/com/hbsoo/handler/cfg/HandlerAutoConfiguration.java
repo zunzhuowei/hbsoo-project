@@ -42,5 +42,9 @@ public class HandlerAutoConfiguration {
         return customChannelHandlers;
     }
 
+    @Bean
+    public SpringBeanFactory springBeanFactory() {
+        return new SpringBeanFactory();
+    }
 
 }

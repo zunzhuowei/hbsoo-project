@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+//@Component
 public final class SpringBeanFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
