@@ -4,7 +4,6 @@ include 'hbsoo-netty-server'
 include 'hbsoo-netty-client'
 include 'hbsoo-netty-codec'
 include 'hbsoo-netty-handler'
-include 'hbsoo-sample'
 include 'hbsoo-commons'
 include 'hbsoo-netty-message'
 
