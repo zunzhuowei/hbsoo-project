@@ -30,8 +30,9 @@ public class MsgHeader {
      */
     private short msgType;
 
-    public void setMsgLen(int contentLen) {
+    public MsgHeader setMsgLen(int contentLen) {
         this.msgLen = contentLen + HEADER_LENGTH;
+        return this;
     }
 
 

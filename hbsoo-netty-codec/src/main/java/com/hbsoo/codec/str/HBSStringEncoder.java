@@ -31,14 +31,16 @@ public class HBSStringEncoder extends MessageToMessageEncoder<HBSMessage<String>
         buffer.writeShort(magicNum)
                 .writeShort(version)
                 .writeInt(msgLen)
-                .writeShort(msgType)
-                .writeBytes(content.getBytes(StandardCharsets.UTF_8));
+                .writeShort(msgType);
+                //.writeBytes();
 
-        final byte[] datas = buffer.array();
+        final byte[] datas = content.getBytes(StandardCharsets.UTF_8);
         for (int i = 0; i < datas.length; i++) {
-            datas[i] = (byte) (datas[i] << msgType);
+            datas[i] = (byte) (datas[i] ^ version);
         }
-        out.add(new String(datas, StandardCharsets.UTF_8));
+        buffer.writeBytes(datas);
+        //out.add(new String(datas, StandardCharsets.UTF_8));
+        out.add(buffer);
     }
 
 }

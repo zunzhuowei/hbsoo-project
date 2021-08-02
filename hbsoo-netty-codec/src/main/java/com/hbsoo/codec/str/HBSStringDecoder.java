@@ -57,7 +57,7 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
 
         HBSMessage<String> message = new HBSMessage<>();
         for (int i = 0; i < datas.length; i++) {
-            datas[i] = (byte) (datas[i] >> messageType);
+            datas[i] = (byte) (datas[i] ^ version);
         }
         message.setHeader(header).setContent(new String(datas, StandardCharsets.UTF_8));
         out.add(message);
