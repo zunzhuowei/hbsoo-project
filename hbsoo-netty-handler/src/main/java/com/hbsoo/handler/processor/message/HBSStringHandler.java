@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static com.hbsoo.handler.constants.Constants.MSG_TYPE_KEY;
+
 /**
  * Created by zun.wei on 2021/7/30.
  */
@@ -33,5 +35,9 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
         }
     }
 
-
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().attr(MSG_TYPE_KEY).set("string");
+        super.exceptionCaught(ctx, cause);
+    }
 }

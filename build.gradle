@@ -77,11 +77,18 @@ subprojects {
         println "--------------" + jar + "---------------"
     }
 
+    // 发布源码到maven
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        archiveClassifier = "sources"
+    }
+
     // 发布jar到maven
     publishing {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
+                artifact sourceJar
             }
         }
         repositories {

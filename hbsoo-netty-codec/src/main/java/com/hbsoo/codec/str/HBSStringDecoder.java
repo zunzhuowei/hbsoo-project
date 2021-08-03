@@ -41,6 +41,16 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
         int messageLength = byteBuf.getInt(4);//messageLength
         short messageType = byteBuf.getShort(8);//messageType
         int contentLength = messageLength - MsgHeader.HEADER_LENGTH;
+        // 消息长度，不处理
+        if (contentLength < 0) {
+            byteBuf.retain();
+            out.add(byteBuf);
+            return;
+        }
+        // 缓冲区可读小于消息长度
+        if (byteBuf.readableBytes() < messageLength) {
+            return;
+        }
 
         MsgHeader header = new MsgHeader();
         header.setMagicNum(magicNum);

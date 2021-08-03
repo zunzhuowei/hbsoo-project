@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static com.hbsoo.handler.constants.Constants.MSG_TYPE_KEY;
+
 /**
  * Created by zun.wei on 2021/7/30.
  */
@@ -47,5 +49,9 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         }
     }
 
-
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().attr(MSG_TYPE_KEY).set("http");
+        super.exceptionCaught(ctx, cause);
+    }
 }
