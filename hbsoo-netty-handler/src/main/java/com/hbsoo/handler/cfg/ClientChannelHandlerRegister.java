@@ -2,8 +2,8 @@ package com.hbsoo.handler.cfg;
 
 import com.hbsoo.handler.constants.ClientProtocolType;
 import com.hbsoo.handler.processor.channel.CustomChannelHandler;
-import com.hbsoo.handler.processor.channel.HttpChannelHandler;
-import com.hbsoo.handler.processor.channel.StringChannelHandler;
+import com.hbsoo.handler.processor.channel.impl.HttpChannelHandler;
+import com.hbsoo.handler.processor.channel.impl.StringChannelHandler;
 
 /**
  * 客户端netty管道消息处理器注册中心

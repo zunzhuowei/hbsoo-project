@@ -34,7 +34,6 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (StrMsgHeader.STR_MAGIC_NUM != magicNum) {
             byteBuf.retain();
             out.add(byteBuf);
-            //ctx.channel().closeFuture();
             return;
         }
         short version = byteBuf.getShort(2);//version

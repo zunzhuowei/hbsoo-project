@@ -1,11 +1,11 @@
 package com.hbsoo.server;
 
-import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
+import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
 import com.hbsoo.handler.cfg.ServerChannelHandlerRegister;
-import com.hbsoo.handler.constants.ClientProtocolType;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
+import com.hbsoo.server.manager.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -15,7 +15,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +29,12 @@ public class HbsooServer {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
-
+    /**
+     * 创建服务
+     * @param bossThreads boss线程数
+     * @param workerThreads worker 线程数
+     * @return HbsooServer
+     */
     public HbsooServer create(Integer bossThreads, Integer workerThreads) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(bossThreads);
         EventLoopGroup workerGroup = new NioEventLoopGroup(workerThreads);
@@ -48,8 +52,8 @@ public class HbsooServer {
     /**
      * 选择协议类型
      *
-     * @param types
-     * @return
+     * @param types com.hbsoo.handler.constants.ServerProtocolType
+     * @return HbsooServer
      */
     public HbsooServer protocolType(ServerProtocolType... types) {
         this.bootstrap.childHandler(
@@ -57,6 +61,9 @@ public class HbsooServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
+
+                        pipeline.addLast(new HBSServerHandshaker
+                                (SessionManager::add, SessionManager::remove));
                         for (ServerProtocolType type : types) {
                             final CustomChannelHandler handler = ServerChannelHandlerRegister.get(type);
                             if (Objects.nonNull(handler)) {
@@ -79,10 +86,19 @@ public class HbsooServer {
         return this;
     }
 
+    /**
+     * 启动服务
+     * @param port
+     * @throws InterruptedException
+     */
     public void start(Integer port) throws InterruptedException {
         Channel ch = this.bootstrap.bind(port).sync().channel();
         log.info("Open your web browser and navigate to http://127.0.0.1:" + port + '/');
-        ch.closeFuture().sync();
+        try {
+            ch.closeFuture().sync();
+        } finally {
+            shutdown();
+        }
     }
 
 

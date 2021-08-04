@@ -1,5 +1,6 @@
-package com.hbsoo.handler.processor.channel;
+package com.hbsoo.handler.processor.channel.impl;
 
+import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.handler.processor.message.HBSHttpHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
