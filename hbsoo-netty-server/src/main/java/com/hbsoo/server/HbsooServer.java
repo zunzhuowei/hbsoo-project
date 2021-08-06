@@ -5,7 +5,7 @@ import com.hbsoo.handler.cfg.ServerChannelHandlerRegister;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
-import com.hbsoo.server.manager.SessionManager;
+import com.hbsoo.server.manager.ServerSessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -63,7 +63,7 @@ public class HbsooServer {
                         ChannelPipeline pipeline = ch.pipeline();
 
                         pipeline.addLast(new HBSServerHandshaker
-                                (SessionManager::add, SessionManager::remove));
+                                (ServerSessionManager::add, ServerSessionManager::remove));
                         for (ServerProtocolType type : types) {
                             final CustomChannelHandler handler = ServerChannelHandlerRegister.get(type);
                             if (Objects.nonNull(handler)) {

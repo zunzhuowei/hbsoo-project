@@ -1,5 +1,6 @@
 package com.hbsoo.client;
 
+import com.hbsoo.client.manager.ClientSessionManager;
 import com.hbsoo.handler.processor.channel.handshaker.HBSClientHandshaker;
 import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
 import com.hbsoo.handler.constants.ClientProtocolType;
@@ -42,7 +43,10 @@ public class HbsooClient {
             @Override
             protected void initChannel(SocketChannel ch){
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new HBSClientHandshaker());
+                pipeline.addLast(new HBSClientHandshaker(
+                        ClientSessionManager::add,
+                        ClientSessionManager::remove
+                ));
                 for (ClientProtocolType type : types) {
                     final CustomChannelHandler handler = ClientChannelHandlerRegister.get(type);
                     if (Objects.nonNull(handler)) {

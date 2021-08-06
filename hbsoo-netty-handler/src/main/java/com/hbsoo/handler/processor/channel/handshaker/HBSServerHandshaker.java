@@ -7,7 +7,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.hbsoo.handler.constants.Constants.HANDSHAKE_KEY;
@@ -15,6 +17,7 @@ import static com.hbsoo.handler.constants.Constants.HANDSHAKE_KEY;
 /**
  * Created by zun.wei on 2021/8/3.
  */
+@Slf4j
 public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
 
 
@@ -51,54 +54,62 @@ public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // http 消息直接跳过
         if (msg instanceof FullHttpRequest) {
-            super.channelRead(ctx, msg);
+            FullHttpRequest request = (FullHttpRequest) msg;
+            request.retain();
+            super.channelRead(ctx, request);
             return;
         }
         if (msg instanceof ByteBuf) {
             ByteBuf byteBuf = (ByteBuf) msg;
-            int readableBytes = byteBuf.readableBytes();
-            if (readableBytes >= 4) {
-                short magicNum = byteBuf.getShort(0);//magicNum
-
-                // 如果不是握手消息，判断管道中的的属性是否握手成功
-                if (magicNum != NettyServerConstants.HANDSHAKE_MAGIC_NUM) {
-                    final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
-                    if (!isHandshake) {
-                        ctx.channel().close();
-                        removeChannelConsumer.accept(ctx.channel());
-                        return;
-                    }
-                    byteBuf.retain();
-                    super.channelRead(ctx, byteBuf);
+            // 如果已经握手过了，则直接跳到下层处理
+            final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
+            if (Objects.nonNull(isHandshake) && isHandshake) {
+                byteBuf.retain();
+                super.channelRead(ctx, byteBuf);
+                return;
+            }
+            try {
+                // 不满足握手长度消息，直接关闭通道
+                int readableBytes = byteBuf.readableBytes();
+                if (readableBytes < 4) {
+                    ctx.channel().close();
+                    removeChannelConsumer.accept(ctx.channel());
                     return;
                 }
+                short magicNum = byteBuf.getShort(0);//magicNum
+                // 如果不是握手消息，直接关闭通道
+                if (magicNum != NettyServerConstants.HANDSHAKE_MAGIC_NUM) {
+                    ctx.channel().close();
+                    removeChannelConsumer.accept(ctx.channel());
+                    return;
+                }
+                // 握手逻辑
                 byteBuf.skipBytes(2);
                 final short reqShort = byteBuf.readShort();
                 if (NettyServerConstants.HANDSHAKE_CLIENT_REQ_1 == reqShort) {
+                    log.info("server channelRead res client handshake req 1 ");
                     final ByteBuf buffer = Unpooled.buffer(4);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_MAGIC_NUM);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_SERVER_RESP_1);
                     ctx.channel().writeAndFlush(buffer);
-                    return;
+                    log.info("server channelRead response client handshake resp1 ");
                 }
                 if (NettyServerConstants.HANDSHAKE_CLIENT_REQ_2 == reqShort) {
+                    log.info("server channelRead res client handshake req 2 ");
                     final ByteBuf buffer = Unpooled.buffer(4);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_MAGIC_NUM);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_SERVER_RESP_2);
                     ctx.channel().writeAndFlush(buffer);
                     ctx.channel().attr(HANDSHAKE_KEY).set(true);
-                    return;
+                    log.info("server channelRead response client handshake resp2 ");
                 }
-
-                ctx.channel().close();
-                removeChannelConsumer.accept(ctx.channel());
-                return;
-            } else {
+            } finally {
+                byteBuf.release();
                 return;
             }
         }
-
         ctx.channel().close();
         removeChannelConsumer.accept(ctx.channel());
         return;
