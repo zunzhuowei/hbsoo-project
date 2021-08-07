@@ -1,5 +1,7 @@
 package com.hbsoo.utils.processor;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.function.Function;
  * Created by zun.wei on 2021/7/24.
  *  线程处理器操作者，根据提供的处理流程函数，使用多/单线程执行业务
  */
+@Slf4j
 public final class ProcessorHolder {
 
 
@@ -48,6 +51,7 @@ public final class ProcessorHolder {
      */
     public void execute() {
         if (itemProcessors.isEmpty()) {
+            log.warn("empty processor execute!");
             return;
         }
 

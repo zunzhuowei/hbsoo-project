@@ -5,7 +5,7 @@ import java.util.function.Function;
 /**
  * Created by zun.wei on 2021/7/24.
  */
-public final class ItemProcessor {
+public final class ItemProcessor<Input, Output> {
 
     /**
      * 处理线程类型
@@ -21,29 +21,28 @@ public final class ItemProcessor {
      * 多线程，线程选择系数；单线程处理时不用设置;
      *  输入是上一个处理器的结果，输出是线程选择系数
      */
-    private Function<Object, Integer> threadRatioFun;
+    private Function<Input, Integer> threadRatioFun;
 
     /**
      * 处理逻辑函数
+     * 输入是上一个处理器的结果，输出是下一个处理函数的输入
      */
-    private Function<Object, Object> logic;
+    private Function<Input, Output> logic;
 
-    private ItemProcessor(){}
-
-    public static ItemProcessor getItem() {
-        return new ItemProcessor();
-    }
+//    public ItemProcessor(Class<Input> inputClass, Class<Output> outputClass){
+//
+//    }
 
     ProcessorType getType() {
         return type;
     }
 
-    public ItemProcessor setType(ProcessorType type) {
+    public ItemProcessor<Input, Output> setType(ProcessorType type) {
         this.type = type;
         return this;
     }
 
-    Function<Object, Object> getLogic() {
+    Function<Input, Output> getLogic() {
         return logic;
     }
 
@@ -53,7 +52,7 @@ public final class ItemProcessor {
      * @param logic 处理器逻辑函数
      * @return  ItemProcessor
      */
-    public ItemProcessor setLogic(Function<Object, Object> logic) {
+    public ItemProcessor<Input, Output> setLogic(Function<Input, Output> logic) {
         this.logic = logic;
         return this;
     }
@@ -62,12 +61,12 @@ public final class ItemProcessor {
         return threadRatio;
     }
 
-    public ItemProcessor setThreadRatio(Integer threadRatio) {
+    public ItemProcessor<Input, Output> setThreadRatio(Integer threadRatio) {
         this.threadRatio = threadRatio;
         return this;
     }
 
-    Function<Object, Integer> getThreadRatioFun() {
+    Function<Input, Integer> getThreadRatioFun() {
         return threadRatioFun;
     }
 
@@ -77,7 +76,7 @@ public final class ItemProcessor {
      * @param threadRatioFun 线程选择系数函数
      * @return ItemProcessor
      */
-    public ItemProcessor setThreadRatioFun(Function<Object, Integer> threadRatioFun) {
+    public ItemProcessor<Input, Output> setThreadRatioFun(Function<Input, Integer> threadRatioFun) {
         this.threadRatioFun = threadRatioFun;
         return this;
     }
