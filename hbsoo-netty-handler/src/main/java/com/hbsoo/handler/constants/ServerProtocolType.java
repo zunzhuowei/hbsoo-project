@@ -11,6 +11,7 @@ public enum ServerProtocolType {
     HTTP,
     WEBSOCKET_PROTOBUF,
     BYTE_ARRAY,
+    HANDSHAKER,
     ;
 
 }

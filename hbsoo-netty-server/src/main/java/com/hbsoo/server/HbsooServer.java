@@ -1,22 +1,19 @@
 package com.hbsoo.server;
 
-import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
-import com.hbsoo.handler.cfg.ServerChannelHandlerRegister;
+import com.hbsoo.handler.processor.ProtocolSelectorHandler;
 import com.hbsoo.handler.constants.ServerProtocolType;
-import com.hbsoo.handler.processor.channel.CustomChannelHandler;
-import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
 import com.hbsoo.server.manager.ServerSessionManager;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by zun.wei on 2021/7/29.
@@ -61,25 +58,8 @@ public class HbsooServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
-
-                        pipeline.addLast(new HBSServerHandshaker
-                                (ServerSessionManager::add, ServerSessionManager::remove));
-                        for (ServerProtocolType type : types) {
-                            final CustomChannelHandler handler = ServerChannelHandlerRegister.get(type);
-                            if (Objects.nonNull(handler)) {
-                                // 编解码器
-                                final List<ChannelHandler> codec = handler.codec();
-                                if (Objects.nonNull(codec) && !codec.isEmpty()) {
-                                    pipeline.addLast(codec.toArray(new ChannelHandler[0]));
-                                }
-                                // 消息处理器
-                                final SimpleChannelInboundHandler handler1 = handler.handler();
-                                if (Objects.nonNull(handler1)) {
-                                    pipeline.addLast(handler1);
-                                }
-                            }
-                        }
-                        pipeline.addLast(new GlobalExceptionHandler());
+                        pipeline.addLast(new ProtocolSelectorHandler
+                                (types, ServerSessionManager::add, ServerSessionManager::remove));
                     }
                 }
         );

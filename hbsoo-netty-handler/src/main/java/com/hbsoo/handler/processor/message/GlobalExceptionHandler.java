@@ -1,5 +1,7 @@
 package com.hbsoo.handler.processor.message;
 
+import com.hbsoo.handler.message.router.model.RespType;
+import com.hbsoo.handler.utils.HttpUtils;
 import com.hbsoo.msg.model.HBSMessage;
 import com.hbsoo.msg.model.StrMsgHeader;
 import io.netty.channel.ChannelFutureListener;
@@ -33,12 +35,10 @@ public class GlobalExceptionHandler extends SimpleChannelInboundHandler<Object> 
         final String msgType = ctx.channel().attr(MSG_TYPE_KEY).get();
         // http 消息
         if (Objects.equals(msgType, "http")) {
-            DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
             final String message = cause.getMessage();
             byte[] bytes = (Objects.nonNull(message) ? message : "").getBytes(StandardCharsets.UTF_8);
-            response.content().writeBytes(bytes);
-            response.headers().add("Content-Type","text/html;charset=utf-8");
-            response.headers().add("Content-Length",  response.content().readableBytes());
+            final DefaultFullHttpResponse response =
+                    HttpUtils.resp(bytes, RespType.HTML, true, HttpResponseStatus.OK).get();
             ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             return;
         }

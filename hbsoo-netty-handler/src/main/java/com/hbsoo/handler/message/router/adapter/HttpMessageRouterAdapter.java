@@ -2,6 +2,8 @@ package com.hbsoo.handler.message.router.adapter;
 
 import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.message.router.model.HttpParam;
+import com.hbsoo.handler.message.router.model.RespType;
+import com.hbsoo.handler.utils.HttpUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,9 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static io.netty.handler.codec.http.HttpHeaderNames.*;
 
 /**
- *  http 消息请求处理器
+ * http 消息请求处理器
  * Created by zun.wei on 2021/7/31.
  */
 @Slf4j
@@ -48,30 +54,24 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
 
     /**
      * html 返回值
+     *
      * @param html HTML
      * @return 返回值
      */
     protected DefaultFullHttpResponse html(String html) {
-        DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
-        response.content().writeBytes(bytes);
-        response.headers().add("Content-Type","text/html;charset=utf-8");
-        response.headers().add("Content-Length",  response.content().readableBytes());
-        return response;
+        return HttpUtils.resp(bytes, RespType.HTML, true, HttpResponseStatus.OK).get();
     }
 
     /**
      * json 返回值
+     *
      * @param json json
      * @return 返回值
      */
     protected DefaultFullHttpResponse json(String json) {
-        DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
-        response.content().writeBytes(bytes);
-        response.headers().add("Content-Type","application/json;charset=utf-8");
-        response.headers().add("Content-Length",  response.content().readableBytes());
-        return response;
+        return HttpUtils.resp(bytes, RespType.JSON, true, HttpResponseStatus.OK).get();
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
      *
      * @return 包含所有请求参数的键值对, 如果没有参数, 则返回空Map
      */
-    private Map<String, Object> parse(Channel channel, FullHttpRequest fullReq)  {
+    private Map<String, Object> parse(Channel channel, FullHttpRequest fullReq) {
         HttpMethod method = fullReq.method();
         Map<String, Object> parmMap = new HashMap<>();
 
@@ -110,9 +110,7 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
         }
         // 不支持其它方法
         else {
-            DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
-            response.headers().add("Content-Type","text/html;charset=utf-8");
-            response.headers().add("Content-Length",  response.content().readableBytes());
+            final DefaultFullHttpResponse response = HttpUtils.resp(null, RespType.JSON, true, HttpResponseStatus.BAD_REQUEST).get();
             channel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             return null;
         }

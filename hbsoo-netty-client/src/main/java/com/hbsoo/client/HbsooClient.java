@@ -4,7 +4,6 @@ import com.hbsoo.client.manager.ClientSessionManager;
 import com.hbsoo.handler.processor.channel.handshaker.HBSClientHandshaker;
 import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
 import com.hbsoo.handler.constants.ClientProtocolType;
-import com.hbsoo.handler.processor.channel.CustomChannelHandler;
 import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -35,10 +34,9 @@ public class HbsooClient {
 
     /**
      * 选择协议类型
-     * @param types
      * @return
      */
-    public HbsooClient protocolType(ClientProtocolType... types) {
+    public HbsooClient protocolType(ClientProtocolType type) {
         this.bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch){
@@ -47,20 +45,10 @@ public class HbsooClient {
                         ClientSessionManager::add,
                         ClientSessionManager::remove
                 ));
-                for (ClientProtocolType type : types) {
-                    final CustomChannelHandler handler = ClientChannelHandlerRegister.get(type);
-                    if (Objects.nonNull(handler)) {
-                        // 编解码器
-                        final List<ChannelHandler> codec = handler.codec();
-                        if (Objects.nonNull(codec) && !codec.isEmpty()) {
-                            pipeline.addLast(codec.toArray(new ChannelHandler[0]));
-                        }
-                        // 消息处理器
-                        final SimpleChannelInboundHandler handler1 = handler.handler();
-                        if (Objects.nonNull(handler1)) {
-                            pipeline.addLast(handler1);
-                        }
-                    }
+
+                final List<ChannelHandler> handler = ClientChannelHandlerRegister.get(type);
+                if (Objects.nonNull(handler)) {
+                    pipeline.addLast(handler.toArray(new ChannelHandler[0]));
                 }
                 pipeline.addLast(new GlobalExceptionHandler());
             }

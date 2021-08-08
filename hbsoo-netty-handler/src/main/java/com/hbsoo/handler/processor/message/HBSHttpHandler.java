@@ -1,6 +1,8 @@
 package com.hbsoo.handler.processor.message;
 
 import com.hbsoo.handler.message.router.MessageRouter;
+import com.hbsoo.handler.message.router.model.RespType;
+import com.hbsoo.handler.utils.HttpUtils;
 import com.hbsoo.handler.utils.SpringBeanFactory;
 import com.hbsoo.msg.annotation.HttpHandler;
 import io.netty.channel.ChannelFutureListener;
@@ -42,9 +44,8 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         }
         if (!b) {
             log.info("http not exist uri handler [{}]", split[0]);
-            DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND);
-            response.headers().add("Content-Type","text/html;charset=utf-8");
-            response.headers().add("Content-Length",  response.content().readableBytes());
+            final DefaultFullHttpResponse response =
+                    HttpUtils.resp(null, RespType.HTML, true, HttpResponseStatus.NOT_FOUND).get();
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         }
     }

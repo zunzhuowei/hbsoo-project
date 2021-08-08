@@ -6,7 +6,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.FullHttpRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -43,7 +42,12 @@ public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        addChannelConsumer.accept(ctx.channel());
+        // 如果已经握手过了，则直接跳到下层处理
+        final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
+        if (Objects.isNull(isHandshake) || !isHandshake) {
+            addChannelConsumer.accept(ctx.channel());
+            return;
+        }
         super.channelActive(ctx);
     }
 
@@ -54,13 +58,6 @@ public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // http 消息直接跳过
-        if (msg instanceof FullHttpRequest) {
-            FullHttpRequest request = (FullHttpRequest) msg;
-            request.retain();
-            super.channelRead(ctx, request);
-            return;
-        }
         if (msg instanceof ByteBuf) {
             ByteBuf byteBuf = (ByteBuf) msg;
             // 如果已经握手过了，则直接跳到下层处理

@@ -7,10 +7,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2021/7/30.
@@ -20,8 +22,17 @@ import java.util.List;
 public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
 
 
+    static AttributeKey<Boolean> HANDSHAKE_KEY = AttributeKey.valueOf("isHandshake");
+
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
+        final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
+        if (Objects.isNull(isHandshake) || !isHandshake) {
+            ctx.channel().close();
+            byteBuf.release();
+            return;
+        }
         int readableBytes = byteBuf.readableBytes();
         //判断可读消息长度
         if (readableBytes < MsgHeader.HEADER_LENGTH) {
