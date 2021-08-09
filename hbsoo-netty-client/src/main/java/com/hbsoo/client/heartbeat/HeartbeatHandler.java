@@ -49,8 +49,8 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 hbsooClient.reConnect();
                 return;
             }
-            count++;
             log.info("send ping to server {},fail count = {}", ctx.channel().remoteAddress(), count);
+            count++;
             final ByteBuf buffer = Unpooled.buffer(4);
             buffer.writeInt(PING);
             ctx.channel().writeAndFlush(buffer);

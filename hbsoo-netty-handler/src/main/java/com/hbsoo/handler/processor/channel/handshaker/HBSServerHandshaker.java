@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -85,22 +86,23 @@ public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
                 // 握手逻辑
                 byteBuf.skipBytes(2);
                 final short reqShort = byteBuf.readShort();
+                final SocketAddress address = ctx.channel().remoteAddress();
                 if (NettyServerConstants.HANDSHAKE_CLIENT_REQ_1 == reqShort) {
-                    log.info("server channelRead res client handshake req 1 ");
+                    log.info("server channelRead res client [{}] handshake req 1 ", address);
                     final ByteBuf buffer = Unpooled.buffer(4);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_MAGIC_NUM);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_SERVER_RESP_1);
                     ctx.channel().writeAndFlush(buffer);
-                    log.info("server channelRead response client handshake resp1 ");
+                    log.info("server channelRead response client [{}] handshake resp1 ", address);
                 }
                 if (NettyServerConstants.HANDSHAKE_CLIENT_REQ_2 == reqShort) {
-                    log.info("server channelRead res client handshake req 2 ");
+                    log.info("server channelRead res client [{}] handshake req 2 ", address);
                     final ByteBuf buffer = Unpooled.buffer(4);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_MAGIC_NUM);
                     buffer.writeShort(NettyServerConstants.HANDSHAKE_SERVER_RESP_2);
                     ctx.channel().writeAndFlush(buffer);
                     ctx.channel().attr(HANDSHAKE_KEY).set(true);
-                    log.info("server channelRead response client handshake resp2 ");
+                    log.info("server channelRead response client [{}] handshake resp2 ", address);
                 }
             } finally {
                 byteBuf.release();
