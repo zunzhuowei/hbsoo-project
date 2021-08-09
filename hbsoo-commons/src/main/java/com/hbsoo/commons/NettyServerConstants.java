@@ -38,5 +38,8 @@ public interface NettyServerConstants {
      */
     short HANDSHAKE_CLIENT_REQ_2 = 113;
 
+    int PING = 0;
+
+    int PONG = 1;
 
 }

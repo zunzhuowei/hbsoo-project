@@ -8,6 +8,7 @@ import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
 import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
 import com.hbsoo.handler.processor.message.HBSHttpHandler;
 import com.hbsoo.handler.processor.message.HBSStringHandler;
+import com.hbsoo.handler.processor.message.ServerHeartbeatHandler;
 import com.hbsoo.msg.model.StrMsgHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -17,10 +18,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.hbsoo.handler.constants.ServerProtocolType.*;
@@ -94,6 +97,8 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      */
     private void addHandsakerHandler(ChannelPipeline pipeline) {
         pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
+        pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+        pipeline.addLast(new ServerHeartbeatHandler());
     }
 
     /**
