@@ -1,5 +1,7 @@
 package com.hbsoo.handler.processor.message;
 
+import com.hbsoo.handler.constants.ServerProtocolType;
+import com.hbsoo.handler.message.router.MessageDispatcher;
 import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.message.router.model.RespType;
 import com.hbsoo.handler.utils.HttpUtils;
@@ -28,7 +30,9 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
-        String uri = msg.uri();
+        MessageDispatcher.dispatchMsg(ctx, msg, ServerProtocolType.HTTP);
+
+        /*String uri = msg.uri();
         String[] split = uri.split("[?]");
         final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, HttpHandler.class);
         boolean b = false;
@@ -47,7 +51,7 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
             final DefaultFullHttpResponse response =
                     HttpUtils.resp(null, RespType.HTML, true, HttpResponseStatus.NOT_FOUND).get();
             ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-        }
+        }*/
     }
 
     @Override

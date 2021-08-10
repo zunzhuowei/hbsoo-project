@@ -1,6 +1,9 @@
 package com.hbsoo.handler.processor.message;
 
+import com.hbsoo.handler.constants.ServerProtocolType;
+import com.hbsoo.handler.message.router.MessageDispatcher;
 import com.hbsoo.handler.message.router.MessageRouter;
+import com.hbsoo.handler.message.router.model.MessageTask;
 import com.hbsoo.handler.utils.SpringBeanFactory;
 import com.hbsoo.msg.annotation.StrHandler;
 import com.hbsoo.msg.model.HBSMessage;
@@ -22,7 +25,13 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HBSMessage<String> msg) throws Exception {
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
-        final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, StrHandler.class);
+        MessageDispatcher.dispatchMsg(
+                new MessageTask()
+                        .setCtx(ctx)
+                        .setProtocolType(ServerProtocolType.STRING)
+                        .setMsg(msg));
+
+        /*final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, StrHandler.class);
         final short msgType = msg.getHeader().getMsgType();
         boolean b = false;
         for (MessageRouter handler : handlers) {
@@ -37,7 +46,7 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
         }
         if (!b) {
             log.warn("msgType [{}] handler not found!", msgType);
-        }
+        }*/
     }
 
     @Override
