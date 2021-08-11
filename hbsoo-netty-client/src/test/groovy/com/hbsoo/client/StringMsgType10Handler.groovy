@@ -15,9 +15,9 @@ class StringMsgType10Handler extends StringMessageRouterAdapter {
 
 
     @Override
-    protected HBSMessage<String> handler(int msgType, String content) {
+    protected void handler(int msgType, String content) {
         log.info("get from server msgType,content {},{}", msgType, content)
-        return null
+
     }
 
 }

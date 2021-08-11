@@ -8,18 +8,16 @@ import com.hbsoo.handler.utils.SpringBeanFactory;
 import com.hbsoo.msg.annotation.HttpHandler;
 import com.hbsoo.msg.annotation.StrHandler;
 import com.hbsoo.msg.model.HBSMessage;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by zun.wei on 2021/8/10.
@@ -27,14 +25,51 @@ import java.util.concurrent.Executors;
 @Slf4j
 public final class MessageDispatcher {
 
-
+    /**
+     * 延迟队列
+     */
     static BlockingQueue<MessageTask> queue = new DelayQueue<>();
-    static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    /***
+     * 线程池
+     */
+    static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+        AtomicInteger atomicInteger = new AtomicInteger();
+        @Override
+        public Thread newThread(Runnable runnable) {
+            Thread thread = new Thread(runnable);
+            thread.setName("dispatcher-" + atomicInteger.incrementAndGet());
+            thread.setUncaughtExceptionHandler((thread1,throwable) -> {
+                throwable.printStackTrace();
+            });
+            return thread;
+        }
+    });
 
-    public static void dispatchMsg(ChannelHandlerContext ctx, Object msg, ServerProtocolType protocolType) {
-        dispatchMsg(new MessageTask().setCtx(ctx).setProtocolType(protocolType).setMsg(msg));
+    /**
+     * 消息转发
+     * @param channel
+     * @param msg
+     * @param protocolType
+     */
+    public static void dispatchMsg(Channel channel, Object msg, ServerProtocolType protocolType) {
+        dispatchMsg(new MessageTask().setChannel(channel).setProtocolType(protocolType).setMsg(msg));
     }
 
+    /**
+     * 消息转发
+     * @param delaySecond 延迟时间（秒）数
+     * @param channel
+     * @param msg
+     * @param protocolType
+     */
+    public static void dispatchMsg(long delaySecond, Channel channel, Object msg, ServerProtocolType protocolType) {
+        dispatchMsg(new MessageTask(delaySecond).setChannel(channel).setProtocolType(protocolType).setMsg(msg));
+    }
+
+    /**
+     * 消息转发
+     * @param messageTask
+     */
     public static void dispatchMsg(MessageTask messageTask) {
         executorService.execute(() -> {
             try {
@@ -43,28 +78,36 @@ public final class MessageDispatcher {
                 e.printStackTrace();
             }
         });
+    }
 
+    /**
+     * 消费消息
+     */
+    static {
         executorService.execute(() -> {
-            // 从队列中获取任务，并执行任务
-            try {
-                MessageTask task = queue.take();
-                final ChannelHandlerContext ctx = task.getCtx();
-                final Object msg = task.getMsg();
-                final ServerProtocolType protocolType = task.getProtocolType();
-                consumptionMessge(ctx, msg, protocolType);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (true) {
+                try {
+                    // 从队列中获取任务，并执行任务
+                    MessageTask task = queue.take();
+                    final Channel channel = task.getChannel();
+                    final Object msg = task.getMsg();
+                    final ServerProtocolType protocolType = task.getProtocolType();
+                    executorService.execute(() -> consumptionMessage(channel, msg, protocolType));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
     }
 
     /**
      * 消费消息
-     * @param ctx
+     * @param channel
      * @param msg
      * @param protocolType
      */
-    private static void consumptionMessge(ChannelHandlerContext ctx, Object msg, ServerProtocolType protocolType) {
+    private static void consumptionMessage(Channel channel, Object msg, ServerProtocolType protocolType) {
         switch (protocolType) {
             case STRING:
             {
@@ -77,7 +120,7 @@ public final class MessageDispatcher {
                     final int[] value = httpHandler.value();
                     for (int i : value) {
                         if (i == msgType) {
-                            handler.handler(ctx, msg);
+                            handler.handler(channel, msg);
                             b = true;
                         }
                     }
@@ -99,7 +142,7 @@ public final class MessageDispatcher {
                     final String[] values = httpHandler.value();
                     for (String value : values) {
                         if (value.equals(split[0])) {
-                            handler.handler(ctx, msg);
+                            handler.handler(channel, msg);
                             b = true;
                         }
                     }
@@ -108,7 +151,7 @@ public final class MessageDispatcher {
                     log.info("http not exist uri handler [{}]", split[0]);
                     final DefaultFullHttpResponse response =
                             HttpUtils.resp(null, RespType.HTML, true, HttpResponseStatus.NOT_FOUND).get();
-                    ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                    channel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
                 }
                 break;
             }

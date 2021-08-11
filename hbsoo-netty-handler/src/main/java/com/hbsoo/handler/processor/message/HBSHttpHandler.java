@@ -30,7 +30,7 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
-        MessageDispatcher.dispatchMsg(ctx, msg, ServerProtocolType.HTTP);
+        MessageDispatcher.dispatchMsg(ctx.channel(), msg, ServerProtocolType.HTTP);
 
         /*String uri = msg.uri();
         String[] split = uri.split("[?]");

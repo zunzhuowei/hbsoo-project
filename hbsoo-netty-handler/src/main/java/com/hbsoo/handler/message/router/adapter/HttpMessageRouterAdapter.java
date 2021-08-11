@@ -1,12 +1,12 @@
 package com.hbsoo.handler.message.router.adapter;
 
+import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.message.router.model.HttpParam;
 import com.hbsoo.handler.message.router.model.RespType;
 import com.hbsoo.handler.utils.HttpUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
@@ -15,11 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import static io.netty.handler.codec.http.HttpHeaderNames.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * http 消息请求处理器
@@ -29,8 +28,12 @@ import static io.netty.handler.codec.http.HttpHeaderNames.*;
 public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttpRequest> {
 
     @Override
-    public void handler(ChannelHandlerContext ctx, FullHttpRequest req) {
-        Channel channel = ctx.channel();
+    public ServerProtocolType getProtocolType() {
+        return ServerProtocolType.HTTP;
+    }
+
+    @Override
+    public void handler(Channel channel, FullHttpRequest req) {
         final Map<String, Object> parse = parse(channel, req);
         if (Objects.isNull(parse)) {
             return;

@@ -1,6 +1,7 @@
 package com.hbsoo.handler.message.router.model;
 
 import com.hbsoo.handler.constants.ServerProtocolType;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ public final class MessageTask implements Delayed {
 
     private ServerProtocolType protocolType;
 
-    private ChannelHandlerContext ctx;
+    private Channel channel;
 
     private Object msg;
 

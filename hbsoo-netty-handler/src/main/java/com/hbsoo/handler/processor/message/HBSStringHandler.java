@@ -27,7 +27,7 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
         MessageDispatcher.dispatchMsg(
                 new MessageTask()
-                        .setCtx(ctx)
+                        .setChannel(ctx.channel())
                         .setProtocolType(ServerProtocolType.STRING)
                         .setMsg(msg));
 
