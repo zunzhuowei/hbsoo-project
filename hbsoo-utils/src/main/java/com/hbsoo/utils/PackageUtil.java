@@ -250,9 +250,8 @@ public final class PackageUtil {
         // 结果对象
         Set<Class<?>> resultSet = new HashSet<>();
 
-        try {
-            // 创建 .jar 文件读入流
-            JarInputStream jarIn = new JarInputStream(new FileInputStream(jarFilePath));
+        // 创建 .jar 文件读入流
+        try (JarInputStream jarIn = new JarInputStream(new FileInputStream(jarFilePath));){
             // 进入点
             JarEntry entry;
 
@@ -315,7 +314,7 @@ public final class PackageUtil {
             }
 
             // 关闭 jar 输入流
-            jarIn.close();
+            //jarIn.close();
         } catch (Exception ex) {
             // 抛出异常
             throw new RuntimeException(ex);

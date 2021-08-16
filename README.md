@@ -7,9 +7,9 @@ https://github.com/zunzhuowei/hbsoo-project-samples
 * sessionManager
 * hotSwap
 * thread safety issues
-* message forward
+* ~~message forward~~
 * cross server message
-* delayed message
+* ~~delayed message~~
 
 ## Service design
 

@@ -1,5 +1,0 @@
-
-dependencies {
-    testImplementation junit
-    implementation nettyall
-}

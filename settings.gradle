@@ -6,5 +6,4 @@ include 'hbsoo-netty-codec'
 include 'hbsoo-netty-handler'
 include 'hbsoo-commons'
 include 'hbsoo-netty-message'
-include 'hbsoo-http-forward'
 
