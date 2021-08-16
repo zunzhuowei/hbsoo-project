@@ -13,7 +13,7 @@ class User {
 
     byte age
 
-    //String address
+    String address
 
     @Override
     public String toString() {
@@ -21,7 +21,7 @@ class User {
                 "username='" + username + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", age=" + age +
-                //", address=" + address +
+                ", address=" + address +
                 '}';
     }
 }

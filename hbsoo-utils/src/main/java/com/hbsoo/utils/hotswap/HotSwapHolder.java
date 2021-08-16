@@ -16,15 +16,43 @@ import java.util.stream.Collectors;
  */
 public final class HotSwapHolder {
 
-
+    /**
+     * 热更对象缓存；key (class name); value (HotSwapBean)
+     */
     private static final Map<String, HotSwapBean> hotSwapBeans = new ConcurrentHashMap<>();
+    /**
+     * 热更对象缓存；key (interface class name); value (Set<HotSwapBean>)
+     */
     private static final Map<String, Set<HotSwapBean>> hotSwapInterfaces = new ConcurrentHashMap<>();
 
+    /**
+     * 添加或者更新热更对象
+     * @param hotSwapClasses 热更对象
+     */
     public static void addOrUpdateHotSwapBean(HotSwapClass... hotSwapClasses) {
         Set<HotSwapClass> set = new HashSet<>(Arrays.asList(hotSwapClasses));
         addOrUpdateHotSwapBeans(set);
     }
 
+    private static Set<Class<?>> getClazzAllInterfaces(Set<Class<?>> interfacesClasses, Class<?> clazz) {
+        final Class<?>[] interfaces = clazz.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
+            if (anInterface == GroovyObject.class) {
+                continue;
+            }
+            interfacesClasses.add(anInterface);
+        }
+        final Class<?> superclass = clazz.getSuperclass();
+        if (superclass == Object.class) {
+            return interfacesClasses;
+        }
+        return getClazzAllInterfaces(interfacesClasses, superclass);
+    }
+
+    /**
+     * 添加或者更新热更对象
+     * @param hotSwapClasses 热更对象
+     */
     public static void addOrUpdateHotSwapBeans(Collection<HotSwapClass> hotSwapClasses) {
         try {
             for (HotSwapClass hotSwapClass : hotSwapClasses) {
@@ -33,7 +61,11 @@ public final class HotSwapHolder {
                     continue;
                 }
 
-                final Class<?>[] interfaces = clazz.getInterfaces();
+                //final Class<?>[] interfaces = clazz.getInterfaces();
+                Set<Class<?>> interfacesClasses = new HashSet<>();
+                getClazzAllInterfaces(interfacesClasses, clazz);
+                final Class<?>[] interfaces = interfacesClasses.toArray(new Class<?>[0]);
+
                 //GroovyObject
 
                 final String srcFileString = hotSwapClass.getSrcFileString();
@@ -110,6 +142,22 @@ public final class HotSwapHolder {
         return null;
     }
 
+    public static <T> Set<T> getHotSwapBeans(Class<T> interfaceClass) {
+        if (!interfaceClass.isInterface()) {
+            return null;
+        }
+        final Set<HotSwapBean> hotSwapBeans = hotSwapInterfaces.get(interfaceClass.getName());
+        if (Objects.isNull(hotSwapBeans) || hotSwapBeans.isEmpty()) {
+            return null;
+        }
+        return hotSwapBeans.stream()
+                .map(e -> {
+                    Object o = e.getBean();
+                    return (T) o;
+                })
+                .collect(Collectors.toSet());
+    }
+
     public static <T> T getHotSwapBean(Class<T> clazz) {
         if (clazz.isInterface()) {
             final Set<HotSwapBean> hotSwapBeans = hotSwapInterfaces.get(clazz.getName());
@@ -154,7 +202,12 @@ public final class HotSwapHolder {
         return null;
     }
 
-
+    /**
+     * 处理接口类型的热更对象
+     * @param anInterface 接口class
+     * @param srcMd5Str 源文件md5值
+     * @param obj 接口实现类对象
+     */
     private static void handlerInterfaces(Class<?> anInterface, String srcMd5Str, Object obj) {
         Set<HotSwapBean> hotSwapBeans = hotSwapInterfaces.get(anInterface.getName());
         if (Objects.isNull(hotSwapBeans)) {

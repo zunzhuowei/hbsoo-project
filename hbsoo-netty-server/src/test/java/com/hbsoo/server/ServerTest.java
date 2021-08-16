@@ -41,10 +41,10 @@ public class ServerTest {
                 String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
                 final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(dir);
                 HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
-                for (HotSwapClass hotSwapClass : hotSwapClasses) {
+                /*for (HotSwapClass hotSwapClass : hotSwapClasses) {
                     final Class<?> clazz = hotSwapClass.getClazz();
                     SpringBeanFactory.autowireBean(clazz);
-                }
+                }*/
 
             }
         }).start();

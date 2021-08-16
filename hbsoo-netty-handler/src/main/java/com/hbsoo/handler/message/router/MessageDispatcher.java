@@ -8,6 +8,7 @@ import com.hbsoo.handler.utils.SpringBeanFactory;
 import com.hbsoo.msg.annotation.HttpHandler;
 import com.hbsoo.msg.annotation.StrHandler;
 import com.hbsoo.msg.model.HBSMessage;
+import com.hbsoo.utils.hotswap.HotSwapHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -135,7 +136,8 @@ public final class MessageDispatcher {
                 FullHttpRequest request = (FullHttpRequest) msg;
                 String uri = request.uri();
                 String[] split = uri.split("[?]");
-                final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, HttpHandler.class);
+                final List<MessageRouter> handlers = HotSwapHolder.getHotSwapBean(MessageRouter.class, HttpHandler.class);
+                //final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, HttpHandler.class);
                 boolean b = false;
                 for (MessageRouter handler : handlers) {
                     final HttpHandler httpHandler = handler.getClass().getAnnotation(HttpHandler.class);
