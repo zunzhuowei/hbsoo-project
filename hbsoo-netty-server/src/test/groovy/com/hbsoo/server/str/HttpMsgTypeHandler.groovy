@@ -36,4 +36,10 @@ class HttpMsgTypeHandler extends HttpMessageRouterAdapter {
     }
 
 
+    /*
+    1. 不能指定类型接收热更类型问题
+    2. handler（如：HttpMsgTypeHandler）中 导入新类时，无效不刷新问题。
+
+     */
+
 }
