@@ -1,4 +1,4 @@
-package com.hbsoo.utils;
+package com.hbsoo.utils.commons;
 
 /**
  * Created by zun.wei on 2021/7/29.

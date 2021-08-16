@@ -1,9 +1,10 @@
 package com.hbsoo.server;
 
-import com.hbsoo.commons.SpringBean;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.utils.SpringBeanFactory;
-import com.hbsoo.utils.GroovySrcScanner;
+import com.hbsoo.utils.commons.GroovySrcScanner;
+import com.hbsoo.utils.hotswap.HotSwapClass;
+import com.hbsoo.utils.hotswap.HotSwapHolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -38,10 +39,13 @@ public class ServerTest {
                     e.printStackTrace();
                 }
                 String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
-                final Set<Class<?>> clazz = GroovySrcScanner.listClazz(dir, SpringBean.class);
-                for (Class<?> aClass : clazz) {
-                    SpringBeanFactory.autowireBean(aClass);
+                final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(dir);
+                HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
+                for (HotSwapClass hotSwapClass : hotSwapClasses) {
+                    final Class<?> clazz = hotSwapClass.getClazz();
+                    SpringBeanFactory.autowireBean(clazz);
                 }
+
             }
         }).start();
 

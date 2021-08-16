@@ -142,7 +142,12 @@ public final class MessageDispatcher {
                     final String[] values = httpHandler.value();
                     for (String value : values) {
                         if (value.equals(split[0])) {
-                            handler.handler(channel, msg);
+                            try {
+                                handler.handler(channel, msg);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                channel.close();
+                            }
                             b = true;
                         }
                     }

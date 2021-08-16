@@ -4,4 +4,5 @@ dependencies {
     implementation springboot
     api project(':hbsoo-netty-codec')
     api project(':hbsoo-commons')
+    implementation project(':hbsoo-utils')
 }

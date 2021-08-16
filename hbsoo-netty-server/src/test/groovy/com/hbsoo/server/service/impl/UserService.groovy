@@ -1,6 +1,5 @@
 package com.hbsoo.server.service.impl
 
-import com.hbsoo.commons.SpringBean
 import com.hbsoo.server.model.User
 import com.hbsoo.server.service.IUserService
 
@@ -8,7 +7,6 @@ import com.hbsoo.server.service.IUserService
  * Created by zun.wei on 2021/8/14.
  *
  */
-@SpringBean
 class UserService implements IUserService{
 
 

@@ -1,4 +1,4 @@
-package com.hbsoo.utils;
+package com.hbsoo.utils.commons;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
