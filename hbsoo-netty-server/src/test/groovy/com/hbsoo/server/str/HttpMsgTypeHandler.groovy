@@ -29,6 +29,9 @@ class HttpMsgTypeHandler extends HttpMessageRouterAdapter {
         def userService = HotSwapHolder.getHotSwapBean(IUserService.class)
         userService.addUser(user)
 
+        userService.regUser()
+        userService.regUser1()
+
 //        def user1 = userService.getUser()
 //        println "user1 = $user1"
 

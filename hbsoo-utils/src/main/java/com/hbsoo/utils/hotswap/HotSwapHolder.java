@@ -34,6 +34,12 @@ public final class HotSwapHolder {
         addOrUpdateHotSwapBeans(set);
     }
 
+    /**
+     * 获取class 的所有接口 class
+     * @param interfacesClasses 用来装class 的容器
+     * @param clazz 想要获取的class的所有接口
+     * @return interfacesClasses
+     */
     private static Set<Class<?>> getClazzAllInterfaces(Set<Class<?>> interfacesClasses, Class<?> clazz) {
         final Class<?>[] interfaces = clazz.getInterfaces();
         for (Class<?> anInterface : interfaces) {
@@ -50,10 +56,45 @@ public final class HotSwapHolder {
     }
 
     /**
+     * 热更对象是否有变化
+     * @param hotSwapClasses 热更对象
+     * @return true 有变化，false 没有变化
+     */
+    private static boolean hasChange(Collection<HotSwapClass> hotSwapClasses) {
+        if (hotSwapBeans.isEmpty()) {
+            return true;
+        }
+        for (HotSwapClass hotSwapClass : hotSwapClasses) {
+            final Class<?> clazz = hotSwapClass.getClazz();
+            if (clazz.isInterface()) {
+                continue;
+            }
+            final HotSwapBean hotSwapBean = hotSwapBeans.get(clazz.getName());
+            if (Objects.isNull(hotSwapBean)) {
+                return true;
+            }
+            final String srcFileMd5 = hotSwapBean.getSrcFileMd5();
+            final String srcFileString = hotSwapClass.getSrcFileString();
+            final String newSrcMd5Str = DigestUtils.md5DigestAsHex(srcFileString.getBytes(StandardCharsets.UTF_8));
+            if (!StringUtils.equals(srcFileMd5, newSrcMd5Str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 添加或者更新热更对象
      * @param hotSwapClasses 热更对象
      */
     public static void addOrUpdateHotSwapBeans(Collection<HotSwapClass> hotSwapClasses) {
+        final boolean b = hasChange(hotSwapClasses);
+        if (!b) {
+            return;
+        }
+        hotSwapBeans.clear();
+        hotSwapInterfaces.clear();
+
         try {
             for (HotSwapClass hotSwapClass : hotSwapClasses) {
                 final Class<?> clazz = hotSwapClass.getClazz();

@@ -21,4 +21,14 @@ class UserService implements IUserService{
         user.nickname = "wangb"
         return user
     }
+
+    @Override
+    void regUser() {
+        println "true = true"
+    }
+
+    @Override
+    void regUser1() {
+        println "true = 2true"
+    }
 }

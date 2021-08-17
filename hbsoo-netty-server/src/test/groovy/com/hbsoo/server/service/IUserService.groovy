@@ -14,5 +14,8 @@ interface IUserService {
 
     User getUser()
 
+    void regUser()
+
+    void regUser1()
 
 }

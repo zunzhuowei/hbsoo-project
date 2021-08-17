@@ -38,14 +38,13 @@ public class ServerTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
-                final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(dir);
-                HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
-                /*for (HotSwapClass hotSwapClass : hotSwapClasses) {
-                    final Class<?> clazz = hotSwapClass.getClazz();
-                    SpringBeanFactory.autowireBean(clazz);
-                }*/
-
+                try {
+                    String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
+                    final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(dir);
+                    HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
 
