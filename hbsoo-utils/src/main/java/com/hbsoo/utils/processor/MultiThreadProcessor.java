@@ -23,6 +23,8 @@ final class MultiThreadProcessor implements Processor {
      */
     public static final int asyncThreads = CPU_COUNT * 2;
 
+    private static final Random random = new Random();
+
     /**
      * 异步线程
      */
@@ -70,7 +72,7 @@ final class MultiThreadProcessor implements Processor {
     @Override
     public void process(Integer threadRatio, Supplier<Object> inputFun, Function<Object, Object> logicFunction, Consumer<Object> outputFun) {
         if (Objects.isNull(threadRatio)) {
-            threadRatio = new Random().nextInt();
+            threadRatio = random.nextInt();
         }
         final int abs = Math.abs(threadRatio);
         final int i = abs % MultiThreadProcessor.asyncThreads;
