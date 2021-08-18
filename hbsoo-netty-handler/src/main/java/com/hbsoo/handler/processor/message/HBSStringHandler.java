@@ -30,23 +30,6 @@ public class HBSStringHandler extends SimpleChannelInboundHandler<HBSMessage<Str
                         .setChannel(ctx.channel())
                         .setProtocolType(ServerProtocolType.STRING)
                         .setMsg(msg));
-
-        /*final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, StrHandler.class);
-        final short msgType = msg.getHeader().getMsgType();
-        boolean b = false;
-        for (MessageRouter handler : handlers) {
-            final StrHandler httpHandler = handler.getClass().getAnnotation(StrHandler.class);
-            final int[] value = httpHandler.value();
-            for (int i : value) {
-                if (i == msgType) {
-                    handler.handler(ctx, msg);
-                    b = true;
-                }
-            }
-        }
-        if (!b) {
-            log.warn("msgType [{}] handler not found!", msgType);
-        }*/
     }
 
     @Override

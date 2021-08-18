@@ -31,27 +31,6 @@ public class HBSHttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         log.debug("HBSStringHandler channelRead0 msg --::{}", msg);
         MessageDispatcher.dispatchMsg(ctx.channel(), msg, ServerProtocolType.HTTP);
-
-        /*String uri = msg.uri();
-        String[] split = uri.split("[?]");
-        final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, HttpHandler.class);
-        boolean b = false;
-        for (MessageRouter handler : handlers) {
-            final HttpHandler httpHandler = handler.getClass().getAnnotation(HttpHandler.class);
-            final String[] values = httpHandler.value();
-            for (String value : values) {
-                if (value.equals(split[0])) {
-                    handler.handler(ctx, msg);
-                    b = true;
-                }
-            }
-        }
-        if (!b) {
-            log.info("http not exist uri handler [{}]", split[0]);
-            final DefaultFullHttpResponse response =
-                    HttpUtils.resp(null, RespType.HTML, true, HttpResponseStatus.NOT_FOUND).get();
-            ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-        }*/
     }
 
     @Override

@@ -5,10 +5,7 @@ import com.hbsoo.codec.str.HBSStringEncoder;
 import com.hbsoo.commons.NettyServerConstants;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
-import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
-import com.hbsoo.handler.processor.message.HBSHttpHandler;
-import com.hbsoo.handler.processor.message.HBSStringHandler;
-import com.hbsoo.handler.processor.message.ServerHeartbeatHandler;
+import com.hbsoo.handler.processor.message.*;
 import com.hbsoo.msg.model.StrMsgHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -68,7 +65,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         }
 
         final ChannelPipeline pipeline = ctx.pipeline();
-        final ServerProtocolType protocolType = isCustomProcotol(in);
+        final ServerProtocolType protocolType = isCustomProtocol(in);
         if (Objects.nonNull(protocolType)) {
             addHandsakerHandler(pipeline);
             addCustomProcotolHandlers(pipeline);
@@ -139,7 +136,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      * @param byteBuf
      * @return
      */
-    private ServerProtocolType isCustomProcotol(ByteBuf byteBuf) {
+    private ServerProtocolType isCustomProtocol(ByteBuf byteBuf) {
         short magicNum = byteBuf.getShort(0);
         // 握手消息
         if (magicNum == NettyServerConstants.HANDSHAKE_MAGIC_NUM) {
@@ -171,7 +168,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(8192));
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX));
-        //TODO pipeline.addLast(new MyTextWebSocketFrameHandler());
+        pipeline.addLast(new HBSWebsocketHandler());
     }
 
 
