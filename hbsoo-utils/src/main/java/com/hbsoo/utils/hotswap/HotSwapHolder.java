@@ -101,53 +101,26 @@ public final class HotSwapHolder {
                 if (clazz.isInterface()) {
                     continue;
                 }
-
-                //final Class<?>[] interfaces = clazz.getInterfaces();
                 Set<Class<?>> interfacesClasses = new HashSet<>();
                 getClazzAllInterfaces(interfacesClasses, clazz);
                 final Class<?>[] interfaces = interfacesClasses.toArray(new Class<?>[0]);
 
-                //GroovyObject
-
                 final String srcFileString = hotSwapClass.getSrcFileString();
                 final String newSrcMd5Str = DigestUtils.md5DigestAsHex(srcFileString.getBytes(StandardCharsets.UTF_8));
+                HotSwapBean hotSwapBean = new HotSwapBean();
+                final Object instance = clazz.newInstance();
+                hotSwapBean.setBean(instance);
+                hotSwapBean.setSrcFileMd5(newSrcMd5Str);
+                hotSwapBean.setBeanName(clazz.getName());
+                hotSwapBean.setBeanSimpleName(clazz.getSimpleName());
+                hotSwapBean.setClazz(clazz);
+                hotSwapBeans.put(clazz.getName(), hotSwapBean);
 
-                HotSwapBean hotSwapBean = hotSwapBeans.get(clazz.getName());
-                if (Objects.nonNull(hotSwapBean)) {
-                    final String srcFileMd5 = hotSwapBean.getSrcFileMd5();
-                    if (StringUtils.equals(newSrcMd5Str, srcFileMd5)) {
+                for (Class<?> anInterface : interfaces) {
+                    if (anInterface == GroovyObject.class) {
                         continue;
                     }
-                    final Object instance = clazz.newInstance();
-                    hotSwapBean.setBean(instance);
-                    hotSwapBean.setSrcFileMd5(newSrcMd5Str);
-                    hotSwapBean.setBeanName(clazz.getName());
-                    hotSwapBean.setBeanSimpleName(clazz.getSimpleName());
-                    hotSwapBean.setClazz(clazz);
-                    hotSwapBeans.put(clazz.getName(), hotSwapBean);
-
-                    for (Class<?> anInterface : interfaces) {
-                        if (anInterface == GroovyObject.class) {
-                            continue;
-                        }
-                        handlerInterfaces(anInterface, hotSwapBean.getSrcFileMd5(), instance);
-                    }
-                } else {
-                    hotSwapBean = new HotSwapBean();
-                    final Object instance = clazz.newInstance();
-                    hotSwapBean.setBean(instance);
-                    hotSwapBean.setSrcFileMd5(newSrcMd5Str);
-                    hotSwapBean.setBeanName(clazz.getName());
-                    hotSwapBean.setBeanSimpleName(clazz.getSimpleName());
-                    hotSwapBean.setClazz(clazz);
-                    hotSwapBeans.put(clazz.getName(), hotSwapBean);
-
-                    for (Class<?> anInterface : interfaces) {
-                        if (anInterface == GroovyObject.class) {
-                            continue;
-                        }
-                        handlerInterfaces(anInterface, hotSwapBean.getSrcFileMd5(), instance);
-                    }
+                    handlerInterfaces(anInterface, hotSwapBean.getSrcFileMd5(), instance);
                 }
             }
         } catch (InstantiationException | IllegalAccessException e) {
