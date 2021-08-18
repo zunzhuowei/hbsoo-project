@@ -2,11 +2,13 @@ package com.hbsoo.server.service.impl
 
 import com.hbsoo.server.model.User
 import com.hbsoo.server.service.IUserService
+import org.springframework.stereotype.Service
 
 /**
  * Created by zun.wei on 2021/8/14.
  *
  */
+@Service
 class UserService implements IUserService{
 
 

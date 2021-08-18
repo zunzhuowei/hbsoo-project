@@ -220,7 +220,7 @@ public final class HotSwapHolder {
         if (clazz.isInterface()) {
             final Set<HotSwapBean> hotSwapBeans = hotSwapInterfaces.get(clazz.getName());
             if (Objects.isNull(hotSwapBeans) || hotSwapBeans.isEmpty()) {
-                return null;
+                return new ArrayList<>();
             }
             return hotSwapBeans.stream()
                     .filter(e -> {
@@ -234,13 +234,13 @@ public final class HotSwapHolder {
 
         final HotSwapBean hotSwapBean = hotSwapBeans.get(clazz.getName());
         if (Objects.isNull(hotSwapBean)) {
-            return null;
+            return new ArrayList<>();
         }
         T t = (T) hotSwapBean.getBean();
         if (t.getClass().isAnnotationPresent(annotationType)) {
-            return Arrays.asList(t);
+            return Collections.singletonList(t);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**

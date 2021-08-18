@@ -2,11 +2,15 @@ package com.hbsoo.client;
 
 import com.hbsoo.client.heartbeat.HeartbeatHandler;
 import com.hbsoo.client.manager.ClientSessionManager;
+import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.processor.channel.handshaker.HBSClientHandshaker;
 import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
 import com.hbsoo.handler.constants.ClientProtocolType;
 import com.hbsoo.handler.processor.message.ClientGlobalExceptionHandler;
 import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
+import com.hbsoo.utils.commons.GroovySrcScanner;
+import com.hbsoo.utils.hotswap.HotSwapClass;
+import com.hbsoo.utils.hotswap.HotSwapHolder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,6 +20,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -103,6 +108,31 @@ public class HbsooClient {
 
     public void shutdown() {
         this.group.shutdownGracefully();
+    }
+
+    /**
+     * 启动热更新
+     */
+    public HbsooClient enableHotSwap(String... groovySrcDir) {
+        if (!HotSwapSwitch.enable) {
+            HotSwapSwitch.enable = true;
+            new Thread(() -> {
+                for (; ; ) {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(groovySrcDir);
+                        HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
+                    } catch (Exception e) {
+                        //e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+        return this;
     }
 
 }

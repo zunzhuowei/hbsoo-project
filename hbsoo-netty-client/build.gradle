@@ -3,4 +3,5 @@ dependencies {
     implementation nettyall
     implementation springboot
     api project(':hbsoo-netty-handler')
+    implementation project(':hbsoo-utils')
 }

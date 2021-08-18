@@ -1,9 +1,12 @@
 package com.hbsoo.server;
 
-import com.hbsoo.handler.processor.ProtocolSelectorHandler;
+import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.constants.ServerProtocolType;
-import com.hbsoo.handler.processor.message.ServerHeartbeatHandler;
+import com.hbsoo.handler.processor.ProtocolSelectorHandler;
 import com.hbsoo.server.manager.ServerSessionManager;
+import com.hbsoo.utils.commons.GroovySrcScanner;
+import com.hbsoo.utils.hotswap.HotSwapClass;
+import com.hbsoo.utils.hotswap.HotSwapHolder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -14,9 +17,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -85,11 +88,37 @@ public class HbsooServer {
         }
     }
 
-
+    /**
+     * 关闭
+     */
     public void shutdown() {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
     }
 
+    /**
+     * 启动热更新
+     */
+    public HbsooServer enableHotSwap(String... groovySrcDir) {
+        if (!HotSwapSwitch.enable) {
+            HotSwapSwitch.enable = true;
+            new Thread(() -> {
+                for (; ; ) {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(groovySrcDir);
+                        HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
+                    } catch (Exception e) {
+                        //e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+        return this;
+    }
 
 }

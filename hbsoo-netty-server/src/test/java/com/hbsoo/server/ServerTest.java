@@ -2,14 +2,8 @@ package com.hbsoo.server;
 
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.utils.SpringBeanFactory;
-import com.hbsoo.utils.commons.GroovySrcScanner;
-import com.hbsoo.utils.hotswap.HotSwapClass;
-import com.hbsoo.utils.hotswap.HotSwapHolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zun.wei on 2021/8/9.
@@ -31,26 +25,10 @@ public class ServerTest {
     public static void main(String[] args) throws InterruptedException {
         SpringApplication.run(ServerTest.class, args);
         HbsooServer server = SpringBeanFactory.getBean(HbsooServer.class);
-        new Thread(() -> {
-            for (; ; ) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
-                    final Set<HotSwapClass> hotSwapClasses = GroovySrcScanner.listHotSwapClazz(dir);
-                    HotSwapHolder.addOrUpdateHotSwapBeans(hotSwapClasses);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
+        String dir = getGroovySrcDir("hbsoo-netty-server/src/test/groovy");
         server.create(1,1)
                 .protocolType(ServerProtocolType.HTTP,ServerProtocolType.STRING)
+                .enableHotSwap(dir)
                 .start(3333);
     }
 

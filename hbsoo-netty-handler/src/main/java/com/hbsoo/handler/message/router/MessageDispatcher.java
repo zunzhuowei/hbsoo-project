@@ -1,5 +1,6 @@
 package com.hbsoo.handler.message.router;
 
+import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.message.router.model.MessageTask;
 import com.hbsoo.handler.message.router.model.RespType;
@@ -16,9 +17,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 /**
  * Created by zun.wei on 2021/8/10.
@@ -35,11 +39,12 @@ public final class MessageDispatcher {
      */
     static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
         AtomicInteger atomicInteger = new AtomicInteger();
+
         @Override
         public Thread newThread(Runnable runnable) {
             Thread thread = new Thread(runnable);
             thread.setName("dispatcher-" + atomicInteger.incrementAndGet());
-            thread.setUncaughtExceptionHandler((thread1,throwable) -> {
+            thread.setUncaughtExceptionHandler((thread1, throwable) -> {
                 throwable.printStackTrace();
             });
             return thread;
@@ -48,6 +53,7 @@ public final class MessageDispatcher {
 
     /**
      * 消息转发
+     *
      * @param channel
      * @param msg
      * @param protocolType
@@ -58,7 +64,8 @@ public final class MessageDispatcher {
 
     /**
      * 消息转发
-     * @param delaySecond 延迟时间（秒）数
+     *
+     * @param delaySecond  延迟时间（秒）数
      * @param channel
      * @param msg
      * @param protocolType
@@ -69,6 +76,7 @@ public final class MessageDispatcher {
 
     /**
      * 消息转发
+     *
      * @param messageTask
      */
     public static void dispatchMsg(MessageTask messageTask) {
@@ -104,15 +112,15 @@ public final class MessageDispatcher {
 
     /**
      * 消费消息
+     *
      * @param channel
      * @param msg
      * @param protocolType
      */
     private static void consumptionMessage(Channel channel, Object msg, ServerProtocolType protocolType) {
         switch (protocolType) {
-            case STRING:
-            {
-                final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, StrHandler.class);
+            case STRING: {
+                final List<MessageRouter> handlers = getMessageRouter(protocolType);
                 HBSMessage<String> message = (HBSMessage<String>) msg;
                 final short msgType = message.getHeader().getMsgType();
                 boolean b = false;
@@ -131,13 +139,11 @@ public final class MessageDispatcher {
                 }
                 break;
             }
-            case HTTP:
-            {
+            case HTTP: {
                 FullHttpRequest request = (FullHttpRequest) msg;
                 String uri = request.uri();
                 String[] split = uri.split("[?]");
-                final List<MessageRouter> handlers = HotSwapHolder.getHotSwapBean(MessageRouter.class, HttpHandler.class);
-                //final List<MessageRouter> handlers = SpringBeanFactory.getBeansOfTypeWithAnnotation(MessageRouter.class, HttpHandler.class);
+                final List<MessageRouter> handlers = getMessageRouter(protocolType);
                 boolean b = false;
                 for (MessageRouter handler : handlers) {
                     final HttpHandler httpHandler = handler.getClass().getAnnotation(HttpHandler.class);
@@ -163,6 +169,26 @@ public final class MessageDispatcher {
                 break;
             }
         }
+    }
+
+    private static List<MessageRouter> getMessageRouter(ServerProtocolType protocolType) {
+        final BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>>
+                routerFun = getRouterFun(HotSwapSwitch.enable);
+        switch (protocolType) {
+            case STRING:
+                return routerFun.apply(MessageRouter.class, StrHandler.class);
+            case HTTP:
+                return routerFun.apply(MessageRouter.class, HttpHandler.class);
+        }
+        return new ArrayList<>();
+    }
+
+
+    private static BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>> getRouterFun(boolean hotSwapEnable) {
+        if (hotSwapEnable) {
+            return HotSwapHolder::getHotSwapBean;
+        }
+        return SpringBeanFactory::getBeansOfTypeWithAnnotation;
     }
 
 }
