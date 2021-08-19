@@ -38,7 +38,7 @@ public final class MessageDispatcher {
      * 线程池
      */
     static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
-        AtomicInteger atomicInteger = new AtomicInteger();
+        final AtomicInteger atomicInteger = new AtomicInteger();
 
         @Override
         public Thread newThread(Runnable runnable) {
@@ -54,9 +54,9 @@ public final class MessageDispatcher {
     /**
      * 消息转发
      *
-     * @param channel
-     * @param msg
-     * @param protocolType
+     * @param channel 消息管道
+     * @param msg 消息内容
+     * @param protocolType 协议类型
      */
     public static void dispatchMsg(Channel channel, Object msg, ServerProtocolType protocolType) {
         dispatchMsg(new MessageTask().setChannel(channel).setProtocolType(protocolType).setMsg(msg));
@@ -66,9 +66,9 @@ public final class MessageDispatcher {
      * 消息转发
      *
      * @param delaySecond  延迟时间（秒）数
-     * @param channel
-     * @param msg
-     * @param protocolType
+     * @param channel 消息管道
+     * @param msg 消息内容
+     * @param protocolType 协议类型
      */
     public static void dispatchMsg(long delaySecond, Channel channel, Object msg, ServerProtocolType protocolType) {
         dispatchMsg(new MessageTask(delaySecond).setChannel(channel).setProtocolType(protocolType).setMsg(msg));
@@ -77,23 +77,23 @@ public final class MessageDispatcher {
     /**
      * 消息转发
      *
-     * @param messageTask
+     * @param messageTask 消息任务
      */
     public static void dispatchMsg(MessageTask messageTask) {
-        executorService.execute(() -> {
+        //executorService.execute(() -> {
             try {
                 queue.put(messageTask);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
+        //});
     }
 
     /**
      * 消费消息
      */
     static {
-        executorService.execute(() -> {
+        new Thread(() -> {
             while (true) {
                 try {
                     // 从队列中获取任务，并执行任务
@@ -105,17 +105,16 @@ public final class MessageDispatcher {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
-        });
+        }).start();
     }
 
     /**
      * 消费消息
      *
-     * @param channel
-     * @param msg
-     * @param protocolType
+     * @param channel 消息管道
+     * @param msg 消息内容
+     * @param protocolType 协议类型
      */
     private static void consumptionMessage(Channel channel, Object msg, ServerProtocolType protocolType) {
         switch (protocolType) {
@@ -171,6 +170,11 @@ public final class MessageDispatcher {
         }
     }
 
+    /**
+     * 获取消息路由列表
+     * @param protocolType 消息协议类型
+     * @return 路由列表
+     */
     private static List<MessageRouter> getMessageRouter(ServerProtocolType protocolType) {
         final BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>>
                 routerFun = getRouterFun(HotSwapSwitch.enable);
@@ -183,7 +187,11 @@ public final class MessageDispatcher {
         return new ArrayList<>();
     }
 
-
+    /**
+     * 获取消息协议路由函数
+     * @param hotSwapEnable 是否使用热更
+     * @return 消息协议路由函数
+     */
     private static BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>> getRouterFun(boolean hotSwapEnable) {
         if (hotSwapEnable) {
             return HotSwapHolder::getHotSwapBean;
