@@ -1,13 +1,12 @@
 package com.hbsoo.client;
 
 import com.hbsoo.client.heartbeat.HeartbeatHandler;
-import com.hbsoo.client.manager.ClientSessionManager;
+import com.hbsoo.client.manager.ClientChannelManager;
 import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.processor.channel.handshaker.HBSClientHandshaker;
 import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
 import com.hbsoo.handler.constants.ClientProtocolType;
 import com.hbsoo.handler.processor.message.ClientGlobalExceptionHandler;
-import com.hbsoo.handler.processor.message.GlobalExceptionHandler;
 import com.hbsoo.utils.commons.GroovySrcScanner;
 import com.hbsoo.utils.hotswap.HotSwapClass;
 import com.hbsoo.utils.hotswap.HotSwapHolder;
@@ -33,6 +32,7 @@ public class HbsooClient {
     private final EventLoopGroup group;
     private String connectHost;
     private Integer listenPort;
+    private Channel channel;
 
     public HbsooClient() {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -59,8 +59,8 @@ public class HbsooClient {
                 pipeline.addLast(new HeartbeatHandler(hbsooClient));
 
                 pipeline.addLast(new HBSClientHandshaker(
-                        ClientSessionManager::add,
-                        ClientSessionManager::remove
+                        ClientChannelManager::add,
+                        ClientChannelManager::remove
                 ));
                 final List<ChannelHandler> handler = ClientChannelHandlerRegister.get(type);
                 if (Objects.nonNull(handler)) {
@@ -79,7 +79,9 @@ public class HbsooClient {
     private Channel tryReconnect(HbsooClient hbsooClient) {
         try {
             TimeUnit.SECONDS.sleep(3);
-            return hbsooClient.reConnect();
+            final Channel channel = hbsooClient.reConnect();
+            this.channel = channel;
+            return channel;
         } catch (Exception e) {
             e.printStackTrace();
             return tryReconnect(hbsooClient);
@@ -95,6 +97,7 @@ public class HbsooClient {
         this.connectHost = connectHost;
         this.listenPort = listenPort;
         Channel ch = this.bootstrap.connect(connectHost, listenPort).sync().channel();
+        this.channel = ch;
         return ch;
     }
 

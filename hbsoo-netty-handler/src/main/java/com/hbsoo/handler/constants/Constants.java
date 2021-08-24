@@ -20,7 +20,7 @@ public interface Constants {
     /**
      * 添加入session manager 的时间
      */
-    AttributeKey<Long> ADD_SESSION_TIME_KEY = AttributeKey.valueOf("addSessionKey");
+    //AttributeKey<Long> ADD_SESSION_TIME_KEY = AttributeKey.valueOf("addSessionKey");
 
 
 }

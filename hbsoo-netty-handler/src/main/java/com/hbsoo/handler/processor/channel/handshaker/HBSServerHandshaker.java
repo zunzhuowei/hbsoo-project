@@ -54,7 +54,8 @@ public class HBSServerHandshaker extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
+        //super.channelInactive(ctx);
+        removeChannelConsumer.accept(ctx.channel());
     }
 
     @Override

@@ -68,7 +68,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         final ServerProtocolType protocolType = isCustomProtocol(in);
         if (Objects.nonNull(protocolType)) {
             addHandsakerHandler(pipeline);
-            addCustomProcotolHandlers(pipeline);
+            addCustomProtocolHandlers(pipeline);
         } else {
             if (isWebSocketUrl(in)) {
                 final boolean containsWebsocket = serverProtocolTypes.contains(WEBSOCKET);
@@ -93,9 +93,9 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      * @param pipeline
      */
     private void addHandsakerHandler(ChannelPipeline pipeline) {
-        pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
         pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
         pipeline.addLast(new ServerHeartbeatHandler());
+        pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
     }
 
     /**
@@ -103,7 +103,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      *
      * @param pipeline
      */
-    private void addCustomProcotolHandlers(ChannelPipeline pipeline) {
+    private void addCustomProtocolHandlers(ChannelPipeline pipeline) {
         final boolean containsStr = serverProtocolTypes.contains(STRING);
         if (containsStr) {
             pipeline.addLast(new HBSStringDecoder());

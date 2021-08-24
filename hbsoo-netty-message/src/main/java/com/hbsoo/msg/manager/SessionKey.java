@@ -1,4 +1,4 @@
-package com.hbsoo.server;
+package com.hbsoo.msg.manager;
 
 import java.util.Objects;
 
@@ -7,10 +7,19 @@ import java.util.Objects;
  */
 public class SessionKey {
 
+    /**
+     * 用户id
+     */
     private Long uid;
 
+    /**
+     * 管道类型
+     */
     private ChannelType channelType;
 
+    /**
+     * 管道id
+     */
     private String channelId;
 
     public String getChannelId() {

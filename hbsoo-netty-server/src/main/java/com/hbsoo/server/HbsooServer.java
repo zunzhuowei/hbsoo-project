@@ -3,7 +3,7 @@ package com.hbsoo.server;
 import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.ProtocolSelectorHandler;
-import com.hbsoo.server.manager.ServerSessionManager;
+import com.hbsoo.server.manager.ServerChannelManager;
 import com.hbsoo.utils.commons.GroovySrcScanner;
 import com.hbsoo.utils.hotswap.HotSwapClass;
 import com.hbsoo.utils.hotswap.HotSwapHolder;
@@ -66,7 +66,7 @@ public class HbsooServer {
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new ProtocolSelectorHandler
-                                (types, ServerSessionManager::add, ServerSessionManager::remove));
+                                (types, ServerChannelManager::add, ServerChannelManager::remove));
                     }
                 }
         );

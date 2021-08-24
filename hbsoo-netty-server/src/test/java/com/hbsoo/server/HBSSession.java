@@ -1,5 +1,6 @@
 package com.hbsoo.server;
 
+import com.hbsoo.msg.manager.ChannelType;
 import io.netty.channel.Channel;
 
 import java.util.Objects;
