@@ -1,6 +1,7 @@
 dependencies {
     implementation junit
     implementation nettyall
+    api protobufjava
     api project(":hbsoo-netty-message")
     implementation project(":hbsoo-commons")
 }

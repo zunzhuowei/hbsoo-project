@@ -6,7 +6,9 @@ import com.hbsoo.commons.NettyServerConstants;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
 import com.hbsoo.handler.processor.message.*;
+import com.hbsoo.msg.model.ProtobufMsgHeader;
 import com.hbsoo.msg.model.StrMsgHeader;
+import com.hbsoo.msg.model.WebsocketProtobufMsgHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -145,6 +147,14 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         // string 类型
         else if (magicNum == StrMsgHeader.STR_MAGIC_NUM) {
             return STRING;
+        }
+        // protobuf
+        else if (magicNum == ProtobufMsgHeader.PROTOBUF_MAGIC_NUM) {
+            return PROTOBUF;
+        }
+        // websocket protobuf
+        else if (magicNum == WebsocketProtobufMsgHeader.WEBSOCKET_PROTOBUF_MAGIC_NUM) {
+            return WEBSOCKET_PROTOBUF;
         }
         // 不属于自定义消息
         else {

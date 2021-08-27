@@ -44,6 +44,9 @@ subprojects {
         spring_boot_autoconfigure = [group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.5.3']
         spock='org.spockframework:spock-core:2.0-M5-groovy-3.0'
         spock_junit4='org.spockframework:spock-junit4:2.0-M5-groovy-3.0'
+        protobufjava='com.google.protobuf:protobuf-java:3.17.3'
+        protobufjavautils='com.google.protobuf:protobuf-java-util:3.17.3'
+        protobufformat='com.googlecode.protobuf-java-format:protobuf-java-format:1.4'
     }
 
     jar {
