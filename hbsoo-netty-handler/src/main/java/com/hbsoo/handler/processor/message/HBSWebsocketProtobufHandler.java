@@ -1,36 +1,33 @@
-package com.hbsoo.codec.protobuf;
+package com.hbsoo.handler.processor.message;
 
-import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.Message;
+import com.hbsoo.handler.constants.ServerProtocolType;
+import com.hbsoo.handler.message.router.MessageDispatcher;
 import com.hbsoo.msg.model.HBSMessage;
 import com.hbsoo.msg.model.MsgHeader;
 import com.hbsoo.msg.model.ProtobufMsgHeader;
-import com.hbsoo.msg.model.StrMsgHeader;
+import com.hbsoo.msg.model.WebsocketProtobufMsgHeader;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 
+import static com.hbsoo.handler.constants.Constants.MSG_TYPE_KEY;
+
 /**
- * Created by zun.wei on 2021/7/30.
+ * Created by zun.wei on 2021/8/18.
  */
 @Slf4j
-@ChannelHandler.Sharable
-public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
-
+public class HBSWebsocketProtobufHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
 
     static AttributeKey<Boolean> HANDSHAKE_KEY = AttributeKey.valueOf("isHandshake");
 
-
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, BinaryWebSocketFrame webSocketFrame) throws Exception {
+        final ByteBuf byteBuf = webSocketFrame.content();
         final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
         if (Objects.isNull(isHandshake) || !isHandshake) {
             ctx.channel().close();
@@ -46,9 +43,7 @@ public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
         short magicNum = byteBuf.getShort(0);//magicNum
         // 如果不是定义的字符串类型消息，则往下抛
-        if (ProtobufMsgHeader.PROTOBUF_MAGIC_NUM != magicNum) {
-            byteBuf.retain();
-            out.add(byteBuf);
+        if (WebsocketProtobufMsgHeader.WEBSOCKET_PROTOBUF_MAGIC_NUM != magicNum) {
             return;
         }
         short version = byteBuf.getShort(2);//version
@@ -57,8 +52,6 @@ public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
         int contentLength = messageLength - MsgHeader.HEADER_LENGTH;
         // 消息长度，不处理
         if (contentLength < 0) {
-            byteBuf.retain();
-            out.add(byteBuf);
             return;
         }
         // 缓冲区可读小于消息长度
@@ -81,6 +74,13 @@ public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
 
         HBSMessage<byte[]> message = new HBSMessage<>();
         message.setHeader(header).setContent(datas);
-        out.add(message);
+        MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_PROTOBUF);
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.channel().attr(MSG_TYPE_KEY).set("websocketProtobuf");
+        super.exceptionCaught(ctx, cause);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.hbsoo.codec.websocketprotobuf;
+package com.hbsoo.codec.websocketbin;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.hbsoo.msg.model.HBSMessage;
@@ -16,13 +16,13 @@ import java.util.List;
  * Created by zun.wei on 2021/7/30.
  */
 @ChannelHandler.Sharable
-public class HBSWebsocketProtobufEncoder extends MessageToMessageEncoder<HBSMessage<? extends GeneratedMessageV3>> {
+public class HBSBinaryWebsocketEncoder extends MessageToMessageEncoder<HBSMessage<ByteBuf>> {
 
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, HBSMessage<? extends GeneratedMessageV3> msg, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, HBSMessage<ByteBuf> msg, List<Object> out) throws Exception {
         final MsgHeader header = msg.getHeader();
-        final GeneratedMessageV3 content = msg.getContent();
+        final ByteBuf content = msg.getContent();
         final short magicNum = header.getMagicNum();
         final short version = header.getVersion();
         final int msgLen = header.getMsgLen();
@@ -35,7 +35,7 @@ public class HBSWebsocketProtobufEncoder extends MessageToMessageEncoder<HBSMess
                 .writeShort(msgType);
                 //.writeBytes();
 
-        buffer.writeBytes(content.toByteArray());
+        buffer.writeBytes(content);
         BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
         out.add(binaryWebSocketFrame);
     }

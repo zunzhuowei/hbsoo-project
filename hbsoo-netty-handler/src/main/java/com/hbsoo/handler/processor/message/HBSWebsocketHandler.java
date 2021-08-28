@@ -1,5 +1,11 @@
 package com.hbsoo.handler.processor.message;
 
+import com.hbsoo.handler.constants.ServerProtocolType;
+import com.hbsoo.handler.message.router.MessageDispatcher;
+import com.hbsoo.msg.model.HBSMessage;
+import com.hbsoo.msg.model.MsgHeader;
+import com.hbsoo.msg.model.StrMsgHeader;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
@@ -18,8 +24,13 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
         if (msg instanceof TextWebSocketFrame) {
             TextWebSocketFrame webSocketFrame = (TextWebSocketFrame) msg;
-            webSocketFrame.text();
-
+            final String text = webSocketFrame.text();
+            final HBSMessage<String> message = HBSMessage.create(String.class);
+            StrMsgHeader strMsgHeader = new StrMsgHeader();
+            strMsgHeader.setMsgType((short) 1);
+            message.setHeader(strMsgHeader);
+            message.setContent(text);
+            MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_TEXT);
         }
         if (msg instanceof PingWebSocketFrame) {
             PingWebSocketFrame webSocketFrame = (PingWebSocketFrame) msg;
@@ -35,8 +46,13 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
         }
         if (msg instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame webSocketFrame = (BinaryWebSocketFrame) msg;
-            webSocketFrame.content();
-
+            final ByteBuf content = webSocketFrame.content();
+            final HBSMessage<ByteBuf> message = HBSMessage.create(ByteBuf.class);
+            MsgHeader msgHeader = new MsgHeader();
+            msgHeader.setMsgType((short) 1);
+            message.setHeader(msgHeader);
+            message.setContent(content);
+            MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_BINARY);
         }
     }
 

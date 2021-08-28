@@ -1,7 +1,12 @@
 package com.hbsoo.handler.processor;
 
+import com.hbsoo.codec.protobuf.HBSProtobufDecoder;
+import com.hbsoo.codec.protobuf.HBSProtobufEncoder;
 import com.hbsoo.codec.str.HBSStringDecoder;
 import com.hbsoo.codec.str.HBSStringEncoder;
+import com.hbsoo.codec.websocketbin.HBSBinaryWebsocketEncoder;
+import com.hbsoo.codec.websocketprotobuf.HBSWebsocketProtobufEncoder;
+import com.hbsoo.codec.websockettext.HBSTextWebsocketEncoder;
 import com.hbsoo.commons.NettyServerConstants;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.processor.channel.handshaker.HBSServerHandshaker;
@@ -112,6 +117,20 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
             pipeline.addLast(new HBSStringEncoder());
             pipeline.addLast(new HBSStringHandler());
         }
+        final boolean containsProtobuf = serverProtocolTypes.contains(PROTOBUF);
+        if (containsProtobuf) {
+            pipeline.addLast(new HBSProtobufDecoder());
+            pipeline.addLast(new HBSProtobufEncoder());
+            pipeline.addLast(new HBSProtobufHandler());
+        }
+        final boolean containsWebsocketProtobuf = serverProtocolTypes.contains(WEBSOCKET_PROTOBUF);
+        if (containsWebsocketProtobuf) {
+            pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpObjectAggregator(8192));
+            pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX));
+            pipeline.addLast(new HBSWebsocketProtobufEncoder());
+            pipeline.addLast(new HBSWebsocketProtobufHandler());
+        }
     }
 
     /**
@@ -178,6 +197,8 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(8192));
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX));
+        pipeline.addLast(new HBSTextWebsocketEncoder());
+        pipeline.addLast(new HBSBinaryWebsocketEncoder());
         pipeline.addLast(new HBSWebsocketHandler());
     }
 

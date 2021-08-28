@@ -1,4 +1,4 @@
-package com.hbsoo.codec.websocketprotobuf;
+package com.hbsoo.codec.websockettext;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.hbsoo.msg.model.HBSMessage;
@@ -9,6 +9,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.util.List;
 
@@ -16,13 +17,13 @@ import java.util.List;
  * Created by zun.wei on 2021/7/30.
  */
 @ChannelHandler.Sharable
-public class HBSWebsocketProtobufEncoder extends MessageToMessageEncoder<HBSMessage<? extends GeneratedMessageV3>> {
+public class HBSTextWebsocketEncoder extends MessageToMessageEncoder<HBSMessage<String>> {
 
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, HBSMessage<? extends GeneratedMessageV3> msg, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, HBSMessage<String> msg, List<Object> out) throws Exception {
         final MsgHeader header = msg.getHeader();
-        final GeneratedMessageV3 content = msg.getContent();
+        final String content = msg.getContent();
         final short magicNum = header.getMagicNum();
         final short version = header.getVersion();
         final int msgLen = header.getMsgLen();
@@ -35,9 +36,9 @@ public class HBSWebsocketProtobufEncoder extends MessageToMessageEncoder<HBSMess
                 .writeShort(msgType);
                 //.writeBytes();
 
-        buffer.writeBytes(content.toByteArray());
-        BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
-        out.add(binaryWebSocketFrame);
+        buffer.writeBytes(content.getBytes());
+        TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(buffer);
+        out.add(textWebSocketFrame);
     }
 
 }
