@@ -33,7 +33,7 @@ public class WebSocketClient {
 
     public static void main(String[] args) throws Exception {
         AtomicInteger atomicInteger = new AtomicInteger();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             String devidid = "devidid-" + atomicInteger.incrementAndGet();
             new Thread(() -> {
                 Client client = new Client();
@@ -49,6 +49,8 @@ public class WebSocketClient {
 
     public static class Client {
         final String URL = System.getProperty("url", "wss://127.0.0.1:1000/websocket");
+        //final String URL = System.getProperty("url", "wss://192.168.1.146:5011/websocket");
+//        final String URL = System.getProperty("url", "wss://192.168.1.100:1000/websocket");
 
         EventLoopGroup group = new NioEventLoopGroup();
 

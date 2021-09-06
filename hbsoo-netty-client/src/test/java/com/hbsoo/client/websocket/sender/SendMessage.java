@@ -116,18 +116,21 @@ public final class SendMessage {
         }
         //sendTextMsg("{\"action\":\"JOIN_ROOM\",\"data\":{\"gameOption\":\"Lv1\",\"gameType\":\"baccarat3patti\"}}");
         sendTextMsg("{\"action\":\"JOIN_ROOM\",\"data\":{\"gameOption\":\"Lv1\",\"gameType\":\"dragonVsTiger\"}}");
+        //sendTextMsg("{\"action\":\"JOIN_ROOM\",\"data\":{\"gameOption\":\"Lv1\",\"gameType\":\"7up7down\"}}");
 
         Random random = new Random();
 
         try (BufferedReader console = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 TimeUnit.SECONDS.sleep(3);
-                final int i = random.nextInt(7);
+                final int i = random.nextInt(10);
                 String betType = i == 1 ? "RED" : i == 2 ? "BLUE" : "DRAW";
                 if (i > 2) {
                     continue;
                 }
                 String bet = "{\"action\":\"DRAGON_VS_TIGER_BET\",\"data\":{\"betType\":\""+betType+"\",\"score\":\"1000\"}}";
+
+                //String bet = "{\"action\":\"7UP7DOWN_BET\",\"data\":{\"betTier\":"+1+",\"betType\":2}}";
                 sendTextMsg(bet);
 
                 /*try {
