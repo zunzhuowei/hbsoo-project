@@ -72,7 +72,7 @@ final class MultiThreadProcessor implements Processor {
     @Override
     public void process(Integer threadRatio, Supplier<Object> inputFun, Function<Object, Object> logicFunction, Consumer<Object> outputFun) {
         if (Objects.isNull(threadRatio)) {
-            threadRatio = random.nextInt();
+            threadRatio = random.nextInt(asyncThreads);
         }
         final int abs = Math.abs(threadRatio);
         final int i = abs % MultiThreadProcessor.asyncThreads;
