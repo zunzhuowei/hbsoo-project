@@ -1,4 +1,4 @@
-package com.hbsoo.commons;
+package com.hbsoo.game.commons;
 
 /**
  * Created by zun.wei on 2021/8/31.
