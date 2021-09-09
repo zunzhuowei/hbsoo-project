@@ -10,7 +10,7 @@ import java.util.List;
  * Created by zun.wei on 2021/8/31.
  */
 @Data
-public class GameMessage implements Serializable {
+public class InnerMessage implements Serializable {
 
     /**
      * 消息类型

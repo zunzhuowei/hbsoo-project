@@ -31,17 +31,17 @@ public class HallApplicationTest {
         AtomicInteger integer = new AtomicInteger();
         new Thread(() -> {
             for (; ; ) {
-                try {
+                /*try {
                     TimeUnit.SECONDS.sleep(2);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
                 TestUser testUser = new TestUser();
                 testUser.setId((long) integer.incrementAndGet());
                 testUser.setPhone("123214");
                 testUser.setNickName("zhang san");
                 String s = JSON.toJSONString(testUser);
-                roomMessageInformer.send(1, s);
+                roomMessageInformer.send(1, true, s);
             }
         }).start();
     }
