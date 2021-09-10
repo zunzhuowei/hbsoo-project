@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 //@Component
-public final class SpringBeanFactory implements ApplicationContextAware {
+public final class GameSpringBeanFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
     private static AutowireCapableBeanFactory autowireCapableBeanFactory;

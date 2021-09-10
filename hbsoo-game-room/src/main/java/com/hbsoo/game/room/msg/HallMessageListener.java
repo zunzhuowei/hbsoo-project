@@ -1,7 +1,8 @@
 package com.hbsoo.game.room.msg;
 
 import com.hbsoo.game.commons.GameConstants;
-import com.hbsoo.game.commons.InnerMessage;
+import com.hbsoo.game.inner.InnerMessage;
+import com.hbsoo.game.inner.InnerMessageDispatcher;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.SerializationCodec;
@@ -26,10 +27,7 @@ public class HallMessageListener {
             try {
                 final RTopic topic = redissonClient.getTopic(GameConstants.H2R_TOPIC_NAME, new SerializationCodec());
                 topic.addListener(InnerMessage.class, (channel, msg) -> {
-                    final String dataJson = msg.getDataJson();
-                    final int msgType = msg.getMsgType();
-                    final boolean batch = msg.isBatch();
-                    System.out.println("dataJson = " + dataJson);
+                    InnerMessageDispatcher.dispatcher(msg);
                 });
             } catch (Exception e) {
                 e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.hbsoo.game.commons;
+package com.hbsoo.game.inner;
 
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
 package com.hbsoo.game.hall.msg;
 
 import com.hbsoo.game.commons.GameConstants;
-import com.hbsoo.game.commons.InnerMessage;
+import com.hbsoo.game.inner.InnerMessage;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.SerializationCodec;
