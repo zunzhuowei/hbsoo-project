@@ -28,12 +28,12 @@ public class InnerMessage implements Serializable {
     private boolean batch = false;
 
 
-    public <T> T getData(Class<T> clazz) {
+    /*public <T> T getData(Class<T> clazz) {
         return JSON.parseObject(this.dataJson, clazz);
     }
 
     public <T> List<T> getDataList(Class<T> clazz) {
         return JSON.parseArray(this.dataJson, clazz);
-    }
+    }*/
 
 }
