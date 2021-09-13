@@ -30,7 +30,8 @@ public interface MessageRouter<MSG> {
      * @return 属性值
      */
     default <T> T getAttr(Channel channel,String key) {
-        return (T) channel.attr(AttributeKey.valueOf(key)).get();
+        AttributeKey<T> t = AttributeKey.valueOf(key);
+        return channel.attr(t).get();
     }
 
     /**
@@ -41,7 +42,8 @@ public interface MessageRouter<MSG> {
      * @param <T> 属性类型
      */
     default <T> void setAttr(Channel channel,String key, T t){
-        channel.attr(AttributeKey.valueOf(key)).set(t);
+        AttributeKey<T> tt = AttributeKey.valueOf(key);
+        channel.attr(tt).set(t);
     }
 
     /**
