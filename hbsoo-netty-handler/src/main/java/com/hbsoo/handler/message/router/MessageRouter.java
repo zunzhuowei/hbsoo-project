@@ -2,6 +2,7 @@ package com.hbsoo.handler.message.router;
 
 import com.hbsoo.handler.constants.ServerProtocolType;
 import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
 
 /**
  *  消息处理器
@@ -20,6 +21,28 @@ public interface MessageRouter<MSG> {
      * 消息协议类型
      */
     ServerProtocolType getProtocolType();
+
+    /**
+     * 获取属性值
+     * @param channel 管道
+     * @param key 属性名
+     * @param <T> 属性值类型
+     * @return 属性值
+     */
+    default <T> T getAttr(Channel channel,String key) {
+        return (T) channel.attr(AttributeKey.valueOf(key)).get();
+    }
+
+    /**
+     * 设置属性值
+     * @param channel 管道
+     * @param key 属性名
+     * @param t 属性值
+     * @param <T> 属性类型
+     */
+    default <T> void setAttr(Channel channel,String key, T t){
+        channel.attr(AttributeKey.valueOf(key)).set(t);
+    }
 
     /**
      * 转发消息
