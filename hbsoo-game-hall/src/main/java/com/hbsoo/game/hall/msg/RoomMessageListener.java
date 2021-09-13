@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 /**
  * Created by zun.wei on 2021/8/31.
  */
-@Component
 public class RoomMessageListener {
 
     @Autowired
