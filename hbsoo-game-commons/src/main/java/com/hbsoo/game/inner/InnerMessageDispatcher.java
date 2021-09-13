@@ -25,7 +25,7 @@ public final class InnerMessageDispatcher {
     /***
      * 线程池
      */
-    static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+    private static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
         @Override

@@ -47,4 +47,11 @@ public interface InnerMessageProcessor<T> {
         process(t);
     }
 
+    /**
+     * 转发消息
+     */
+    default void forward(InnerMessage message) {
+        InnerMessageDispatcher.dispatcher(message);
+    }
+
 }
