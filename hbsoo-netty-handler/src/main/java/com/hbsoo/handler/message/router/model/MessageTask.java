@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 @Accessors(chain = true)
-public final class MessageTask implements Delayed {
+public final class MessageTask implements Delayed, Serializable {
 
     private final long timeToRun;
 

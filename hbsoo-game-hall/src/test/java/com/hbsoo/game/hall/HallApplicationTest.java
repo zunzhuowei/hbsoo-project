@@ -35,8 +35,7 @@ public class HallApplicationTest {
                 testUser.setId((long) integer.incrementAndGet());
                 testUser.setPhone("123214");
                 testUser.setNickName("zhang san");
-                String s = JSON.toJSONString(testUser);
-                roomMessageInformer.send(1, false, s);
+                roomMessageInformer.send(1, 0L, false, false, testUser);
             }
         }).start();
     }

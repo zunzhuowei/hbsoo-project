@@ -5,10 +5,7 @@ import com.hbsoo.game.commons.GameSpringBeanFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,6 +18,10 @@ public final class InnerMessageDispatcher {
      * 处理器缓存
      */
     private static final Map<Integer, InnerMessageProcessor> cache = new ConcurrentHashMap<>();
+    /**
+     * 延迟队列
+     */
+    static BlockingQueue<InnerMessage> queue = new DelayQueue<>();
 
     /***
      * 线程池
@@ -44,29 +45,49 @@ public final class InnerMessageDispatcher {
      * @param message 内部消息
      */
     public static void dispatcher(InnerMessage message) {
-        final int msgType = message.getMsgType();
-        final boolean batch = message.isBatch();
-        final String dataJson = message.getDataJson();
-        final InnerMessageProcessor innerMessageProcessor = cache.get(msgType);
-        if (Objects.nonNull(innerMessageProcessor)) {
-            executorService.execute(() -> {
-                innerMessageProcessor.process0(batch, dataJson);
-            });
-            return;
+        try {
+            queue.put(message);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        List<InnerMessageProcessor> processors = GameSpringBeanFactory.getBeansOfTypeWithAnnotation
-                (InnerMessageProcessor.class, InnerProcessor.class);
-        for (InnerMessageProcessor processor : processors) {
-            final InnerProcessor innerProcessor = processor.getClass().getAnnotation(InnerProcessor.class);
-            final int value = innerProcessor.value();
-            if (value == msgType) {
-                cache.put(value, processor);
-                executorService.execute(() -> {
-                    processor.process0(batch, dataJson);
-                });
-            }
-        }
+    }
 
+    /**
+     * 消费消息
+     */
+    static {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    // 从队列中获取任务，并执行任务
+                    InnerMessage message = queue.take();
+                    final int msgType = message.getMsgType();
+                    final boolean batch = message.isBatch();
+                    final String dataJson = message.getDataJson();
+                    final InnerMessageProcessor innerMessageProcessor = cache.get(msgType);
+                    if (Objects.nonNull(innerMessageProcessor)) {
+                        executorService.execute(() -> {
+                            innerMessageProcessor.process0(batch, dataJson);
+                        });
+                        return;
+                    }
+                    List<InnerMessageProcessor> processors = GameSpringBeanFactory.getBeansOfTypeWithAnnotation
+                            (InnerMessageProcessor.class, InnerProcessor.class);
+                    for (InnerMessageProcessor processor : processors) {
+                        final InnerProcessor innerProcessor = processor.getClass().getAnnotation(InnerProcessor.class);
+                        final int value = innerProcessor.value();
+                        if (value == msgType) {
+                            cache.put(value, processor);
+                            executorService.execute(() -> {
+                                processor.process0(batch, dataJson);
+                            });
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 }

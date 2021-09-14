@@ -1,5 +1,5 @@
 dependencies {
     api project(':hbsoo-game-commons')
     api project(':hbsoo-netty-server')
-    api project(':hbsoo-redis')
+    //api project(':hbsoo-redis')
 }

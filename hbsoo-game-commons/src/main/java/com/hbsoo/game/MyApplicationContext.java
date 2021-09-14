@@ -1,6 +1,7 @@
 package com.hbsoo.game;
 
 import com.hbsoo.game.commons.GameSpringBeanFactory;
+import com.hbsoo.game.inner.MessageInformer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,5 +16,9 @@ public class MyApplicationContext {
         return new GameSpringBeanFactory();
     }
 
+    @Bean
+    public MessageInformer messageInformer() {
+        return new MessageInformer();
+    }
 
 }

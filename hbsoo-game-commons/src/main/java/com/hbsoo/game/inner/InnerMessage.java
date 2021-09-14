@@ -1,16 +1,20 @@
 package com.hbsoo.game.inner;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zun.wei on 2021/8/31.
  */
 @Data
-public class InnerMessage implements Serializable {
+public class InnerMessage implements Delayed, Serializable {
+    /**
+     * 延迟时间
+     */
+    private final long timeToRun;
 
     /**
      * 消息类型
@@ -28,12 +32,29 @@ public class InnerMessage implements Serializable {
     private boolean batch = false;
 
 
-    /*public <T> T getData(Class<T> clazz) {
-        return JSON.parseObject(this.dataJson, clazz);
+    public InnerMessage() {
+        this.timeToRun = 0L;
     }
 
-    public <T> List<T> getDataList(Class<T> clazz) {
-        return JSON.parseArray(this.dataJson, clazz);
-    }*/
+    /**
+     * 延迟秒数
+     *
+     * @param timeLeft 延迟时间(秒)
+     */
+    public InnerMessage(long timeLeft) {
+        this.timeToRun = (timeLeft * 1000L) + System.currentTimeMillis();
+    }
+
+    @Override
+    public long getDelay(TimeUnit unit) {
+        long diff = timeToRun - System.currentTimeMillis();
+        return unit.convert(diff, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public int compareTo(Delayed o) {
+        long gap = this.getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS);
+        return Long.valueOf(gap).intValue();
+    }
 
 }

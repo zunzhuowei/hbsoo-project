@@ -1,3 +1,4 @@
 dependencies {
     api fastjson
+    api project(':hbsoo-redis')
 }
