@@ -35,7 +35,7 @@ public class HallApplicationTest {
                 testUser.setId((long) integer.incrementAndGet());
                 testUser.setPhone("123214");
                 testUser.setNickName("zhang san");
-                roomMessageInformer.send(1, 0L, false, false, testUser);
+                roomMessageInformer.send("room_01",1, 0L, false, false, testUser);
             }
         }).start();
     }

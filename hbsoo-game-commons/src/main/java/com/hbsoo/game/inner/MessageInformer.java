@@ -14,14 +14,28 @@ public class MessageInformer {
     @Autowired
     private RedissonClient redissonClient;
 
-
-    public void send(String topicName, int msgType, Long delaySeconds, boolean async, boolean isArrJson, Object msgObj) {
+    /**
+     * 发送消息到队列中
+     *
+     * @param toServerId   发送目的地的服务器id
+     * @param fromServerId   来自哪个服务器的消息
+     * @param topicName    队列主题
+     * @param msgType      消息类型
+     * @param delaySeconds 延迟时间
+     * @param async        是否异步发送
+     * @param isArrJson    是否为列表对象
+     * @param msgObj       消息对象
+     */
+    public void send(String toServerId, String fromServerId, String topicName, int msgType,
+                     Long delaySeconds, boolean async, boolean isArrJson, Object msgObj) {
         final String json = JSON.toJSONString(msgObj);
         final RTopic topic = redissonClient.getTopic(topicName, new SerializationCodec());
         final InnerMessage message = new InnerMessage(delaySeconds);
         message.setMsgType(msgType);
         message.setDataJson(json);
         message.setBatch(isArrJson);
+        message.setToServerId(toServerId);
+        message.setFromServerId(fromServerId);
         if (async) {
             topic.publishAsync(message);
         } else {

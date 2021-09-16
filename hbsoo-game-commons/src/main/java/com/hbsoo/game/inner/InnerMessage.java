@@ -31,6 +31,16 @@ public class InnerMessage implements Delayed, Serializable {
      */
     private boolean batch = false;
 
+    /**
+     * 发送目的地的服务器id;如果目标服务器id不一样则不处理消息
+     */
+    private String toServerId;
+
+    /**
+     * 来自哪个服务器的消息
+     */
+    private String fromServerId;
+
 
     public InnerMessage() {
         this.timeToRun = 0L;
