@@ -1,16 +1,19 @@
 package com.hbsoo.handler.message.router.adapter;
 
+import com.alibaba.fastjson.JSON;
 import com.hbsoo.handler.constants.ServerProtocolType;
 import com.hbsoo.handler.message.router.MessageRouter;
 import com.hbsoo.handler.message.router.model.HttpParam;
 import com.hbsoo.handler.message.router.model.RespType;
 import com.hbsoo.handler.utils.HttpUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -99,15 +102,23 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
         }
         // 是POST请求
         else if (HttpMethod.POST == method) {
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullReq);
-            decoder.offer(fullReq);
-            List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
-            for (InterfaceHttpData parm : parmList) {
-                Attribute data = (Attribute) parm;
-                try {
-                    parmMap.put(data.getName(), data.getValue());
-                } catch (IOException e) {
-                    e.printStackTrace();
+            String contentType = fullReq.headers().get("Content-Type").trim().toLowerCase();
+            if (contentType.contains("json")) {
+                final ByteBuf content = fullReq.content();
+                String msg = content.toString(CharsetUtil.UTF_8);
+                Map<String, Object> params = JSON.parseObject(msg, Map.class);
+                parmMap.putAll(params);
+            } else {
+                HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullReq);
+                decoder.offer(fullReq);
+                List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
+                for (InterfaceHttpData parm : parmList) {
+                    Attribute data = (Attribute) parm;
+                    try {
+                        parmMap.put(data.getName(), data.getValue());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

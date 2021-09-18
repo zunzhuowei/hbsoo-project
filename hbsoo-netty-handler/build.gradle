@@ -2,6 +2,7 @@ dependencies {
     implementation junit
     implementation nettyall
     implementation springboot
+    implementation fastjson
     api project(':hbsoo-netty-codec')
     api project(':hbsoo-commons')
     implementation project(':hbsoo-utils')
