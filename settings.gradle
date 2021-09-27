@@ -10,4 +10,5 @@ include 'hbsoo-redis'
 include 'hbsoo-game-hall'
 include 'hbsoo-game-room'
 include 'hbsoo-game-commons'
+include 'hbsoo-http-tool'
 

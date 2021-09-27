@@ -1,0 +1,7 @@
+dependencies{
+    implementation okhttp
+    implementation fastjson
+    implementation commons
+    implementation commonsio
+}
+

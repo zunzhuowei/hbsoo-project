@@ -50,6 +50,7 @@ subprojects {
         redisson='org.redisson:redisson:3.16.1'
         springbootRedisson='org.redisson:redisson-spring-boot-starter:3.16.1'
         fastjson='com.alibaba:fastjson:1.2.78'
+        okhttp='com.squareup.okhttp3:okhttp:4.9.1'
     }
 
     jar {
