@@ -1,5 +1,6 @@
+serverId: 1000
 redisson:
-  hostPorts: 192.168.1.197:6379
+  hostPorts: 127.0.0.1:6379
   db: 0
   connectionPoolSize: 5
   connectionMinimumIdleSize: 3
