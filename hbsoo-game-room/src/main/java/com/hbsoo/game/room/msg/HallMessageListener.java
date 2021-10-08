@@ -40,7 +40,7 @@ public class HallMessageListener {
                 final RTopic topic = redissonClient.getTopic(GameConstants.H2R_TOPIC_NAME, new SerializationCodec());
                 topic.addListener(InnerMessage.class, (channel, msg) -> {
                     final String toServerId = msg.getToServerId();
-                    if (toServerId == null || !toServerId.equals(fromServerId)) {
+                    if (toServerId == null || !toServerId.equals(ServerType.ROOM + ":" + fromServerId)) {
                         return;
                     }
                     InnerMessageDispatcher.dispatcher(msg);

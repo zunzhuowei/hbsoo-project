@@ -1,8 +1,9 @@
 package com.hbsoo.game.hall;
 
 import com.alibaba.fastjson.JSON;
+import com.hbsoo.game.commons.ServerType;
 import com.hbsoo.game.commons.TestUser;
-import com.hbsoo.game.hall.msg.RoomMessageInformer;
+import com.hbsoo.game.inner.MessageInformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,7 +24,7 @@ public class HallApplicationTest {
 
 
     @Autowired
-    private RoomMessageInformer roomMessageInformer;
+    private MessageInformer messageInformer;
 
 
     @PostConstruct
@@ -35,7 +36,7 @@ public class HallApplicationTest {
                 testUser.setId((long) integer.incrementAndGet());
                 testUser.setPhone("123214");
                 testUser.setNickName("zhang san");
-                roomMessageInformer.send("room_01",1, 0L, false, false, testUser);
+                messageInformer.send(ServerType.ROOM,1, 0L, false, false, testUser);
             }
         }).start();
     }

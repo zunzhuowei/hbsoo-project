@@ -6,6 +6,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,9 +37,9 @@ public class ServerHolder {
      * @param type 服务器类型
      * @return 服务器id集合
      */
-    public Set<String> getServerIds(ServerType type) {
+    public List<String> getServerIds(ServerType type) {
         final RSet<String> set = redissonClient.getSet("serverIdSet");
-        return set.stream().filter(e -> e.startsWith(type.toString() + ":")).collect(Collectors.toSet());
+        return set.stream().filter(e -> e.startsWith(type.toString() + ":")).collect(Collectors.toList());
     }
 
     /**
@@ -59,7 +60,7 @@ public class ServerHolder {
      * @param type 服务类型
      * @param serverId 服务id
      */
-    public void saveServiceId(Long playerId, ServerType type, String serverId) {
+    public void saveServerId(Long playerId, ServerType type, String serverId) {
         final RBucket<String> bucket = redissonClient.getBucket(playerId + ":" + type.toString());
         bucket.set(serverId);
     }
@@ -69,8 +70,8 @@ public class ServerHolder {
      * @param playerId 玩家id
      * @param type 服务类型
      */
-    public void saveServiceId(Long playerId, ServerType type) {
-        saveServiceId(playerId, type, fromServerId);
+    public void saveServerId(Long playerId, ServerType type) {
+        saveServerId(playerId, type, fromServerId);
     }
 
     /**

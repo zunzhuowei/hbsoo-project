@@ -15,10 +15,10 @@ public class HallApplicationContext {
         return new RoomMessageListener();
     }
 
-    @Bean
-    public RoomMessageInformer roomMessageInformer() {
-        return new RoomMessageInformer();
-    }
+//    @Bean
+//    public RoomMessageInformer roomMessageInformer() {
+//        return new RoomMessageInformer();
+//    }
 
 
 }

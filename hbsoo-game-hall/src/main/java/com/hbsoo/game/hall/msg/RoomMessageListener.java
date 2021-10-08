@@ -37,7 +37,7 @@ public class RoomMessageListener {
                 final RTopic topic = redissonClient.getTopic(GameConstants.R2H_TOPIC_NAME, new SerializationCodec());
                 topic.addListener(InnerMessage.class, (channel, msg) -> {
                     final String toServerId = msg.getToServerId();
-                    if (toServerId == null || !toServerId.equals(fromServerId)) {
+                    if (toServerId == null || !toServerId.equals(ServerType.HALL + ":" + fromServerId)) {
                         return;
                     }
                     InnerMessageDispatcher.dispatcher(msg);

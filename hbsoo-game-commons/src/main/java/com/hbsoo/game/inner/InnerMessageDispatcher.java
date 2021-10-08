@@ -69,7 +69,7 @@ public final class InnerMessageDispatcher {
                         executorService.execute(() -> {
                             innerMessageProcessor.process0(batch, dataJson);
                         });
-                        return;
+                        continue;
                     }
                     List<InnerMessageProcessor> processors = GameSpringBeanFactory.getBeansOfTypeWithAnnotation
                             (InnerMessageProcessor.class, InnerProcessor.class);

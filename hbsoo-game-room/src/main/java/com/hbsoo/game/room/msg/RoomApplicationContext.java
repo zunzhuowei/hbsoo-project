@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RoomApplicationContext {
 
-    @Bean
-    public HallMessageInformer roomMessageListener() {
-        return new HallMessageInformer();
-    }
+//    @Bean
+//    public HallMessageInformer roomMessageListener() {
+//        return new HallMessageInformer();
+//    }
 
     @Bean
     public HallMessageListener roomMessageInformer() {
