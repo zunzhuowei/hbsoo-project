@@ -1,13 +1,21 @@
 package com.hbsoo.game.room.msg;
 
 import com.hbsoo.game.commons.GameConstants;
+import com.hbsoo.game.commons.ServerHolder;
+import com.hbsoo.game.commons.ServerType;
 import com.hbsoo.game.inner.MessageInformer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by zun.wei on 2021/8/31.
  */
+@Slf4j
 public class HallMessageInformer {
 
     @Autowired
@@ -16,17 +24,43 @@ public class HallMessageInformer {
     @Value("${serverId}")
     private String fromServerId;
 
+    @Autowired
+    private ServerHolder serverHolder;
 
-    public void send(String serverId, int msgType, Object msgObj) {
-        send(serverId, msgType, 0L, false, false, msgObj);
-    }
-
-    public void send(String serverId, int msgType, Long delaySeconds, Object msgObj) {
-        send(serverId, msgType, delaySeconds, false, false, msgObj);
-    }
+//    public void send(String serverId, int msgType, Object msgObj) {
+//        send(serverId, msgType, 0L, false, false, msgObj);
+//    }
+//
+//    public void send(String serverId, int msgType, Long delaySeconds, Object msgObj) {
+//        send(serverId, msgType, delaySeconds, false, false, msgObj);
+//    }
 
     public void send(String toServerId, int msgType, Long delaySeconds, boolean async, boolean isArrJson, Object msgObj) {
         messageInformer.send(toServerId, fromServerId, GameConstants.R2H_TOPIC_NAME, msgType, delaySeconds, async, isArrJson, msgObj);
+    }
+
+    public void send(ServerType serverType, Long playerId,
+                     int msgType, Long delaySeconds,
+                     boolean async, boolean isArrJson, Object msgObj) {
+        final String serverId = serverHolder.getServerId(playerId, serverType);
+        if (!StringUtils.hasLength(serverId)) {
+            log.warn("HallMessageInformer send serverId is null");
+            return;
+        }
+        send(serverId, msgType, delaySeconds, async, isArrJson, msgObj);
+    }
+
+    public void send(ServerType serverType,
+                     int msgType, Long delaySeconds,
+                     boolean async, boolean isArrJson, Object msgObj) {
+        final Set<String> serverIds = serverHolder.getServerIds(serverType);
+        if (Objects.isNull(serverIds) || serverIds.isEmpty()) {
+            log.warn("HallMessageInformer send serverIds is null");
+            return;
+        }
+        for (String serverId : serverIds) {
+            send(serverId, msgType, delaySeconds, async, isArrJson, msgObj);
+        }
     }
 
 }

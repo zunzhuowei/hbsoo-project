@@ -1,6 +1,8 @@
 package com.hbsoo.game.hall.msg;
 
 import com.hbsoo.game.commons.GameConstants;
+import com.hbsoo.game.commons.ServerHolder;
+import com.hbsoo.game.commons.ServerType;
 import com.hbsoo.game.inner.InnerMessage;
 import com.hbsoo.game.inner.InnerMessageDispatcher;
 import org.redisson.api.*;
@@ -24,8 +26,12 @@ public class RoomMessageListener {
     @Value("${serverId}")
     private String fromServerId;
 
+    @Autowired
+    private ServerHolder serverHolder;
+
     @PostConstruct
     public void init() {
+        serverHolder.saveServerId(ServerType.HALL, fromServerId);
         new Thread(() -> {
             try {
                 final RTopic topic = redissonClient.getTopic(GameConstants.R2H_TOPIC_NAME, new SerializationCodec());
@@ -38,18 +44,6 @@ public class RoomMessageListener {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-        }).start();
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                    final RMap<Object, Object> map = redissonClient.getMap(GameConstants.HALL_SERVER_NAME_MAP);
-                    map.put(fromServerId, System.currentTimeMillis());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }).start();
     }
