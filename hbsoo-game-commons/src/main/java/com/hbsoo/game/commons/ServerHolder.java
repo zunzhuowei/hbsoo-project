@@ -4,6 +4,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +17,9 @@ public class ServerHolder {
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Value("${serverId}")
+    private String fromServerId;
 
     /**
      * 保存服务器id
@@ -58,6 +62,15 @@ public class ServerHolder {
     public void saveServiceId(Long playerId, ServerType type, String serverId) {
         final RBucket<String> bucket = redissonClient.getBucket(playerId + ":" + type.toString());
         bucket.set(serverId);
+    }
+
+    /**
+     * 保存服务id
+     * @param playerId 玩家id
+     * @param type 服务类型
+     */
+    public void saveServiceId(Long playerId, ServerType type) {
+        saveServiceId(playerId, type, fromServerId);
     }
 
     /**

@@ -21,9 +21,6 @@ public class HallMessageInformer {
     @Autowired
     private MessageInformer messageInformer;
 
-    @Value("${serverId}")
-    private String fromServerId;
-
     @Autowired
     private ServerHolder serverHolder;
 
@@ -36,7 +33,7 @@ public class HallMessageInformer {
 //    }
 
     public void send(String toServerId, int msgType, Long delaySeconds, boolean async, boolean isArrJson, Object msgObj) {
-        messageInformer.send(toServerId, fromServerId, GameConstants.R2H_TOPIC_NAME, msgType, delaySeconds, async, isArrJson, msgObj);
+        messageInformer.send(toServerId, GameConstants.R2H_TOPIC_NAME, msgType, delaySeconds, async, isArrJson, msgObj);
     }
 
     public void send(ServerType serverType, Long playerId,
