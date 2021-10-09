@@ -3,6 +3,7 @@ package com.hbsoo.server.manager;
 import io.netty.channel.Channel;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,6 +51,40 @@ public final class ServerChannelManager {
      */
     public static void regChannel(Long userId, Channel channel) {
         USER_ALL_CHANNEL.put(userId, channel);
+    }
+
+    /**
+     * 获取管道
+     * @param userId 用户id
+     * @return 消息管道
+     */
+    public static Channel getChannel(Long userId) {
+        return USER_ALL_CHANNEL.get(userId);
+    }
+
+    /**
+     * 发送消息给用户
+     * @param userId 用户id
+     * @param msg 消息对象
+     */
+    public static void sendMsg(Long userId, Object msg) {
+        final Channel channel = getChannel(userId);
+        if (Objects.nonNull(channel)) {
+            channel.writeAndFlush(msg);
+        }
+    }
+
+    /**
+     * 发送消息给用户并且关闭管道
+     * @param userId 用户id
+     * @param msg 消息对象
+     */
+    public static void sendMsgAndClose(Long userId, Object msg) {
+        final Channel channel = getChannel(userId);
+        if (Objects.nonNull(channel)) {
+            channel.writeAndFlush(msg);
+            channel.close();
+        }
     }
 
 }
