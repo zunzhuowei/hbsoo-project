@@ -18,7 +18,7 @@ import java.util.*;
  * Created by zun.wei on 2021/9/14.
  */
 @Slf4j
-public class MessageInformer {
+public class InnerMessageInformer {
 
     @Autowired
     private RedissonClient redissonClient;

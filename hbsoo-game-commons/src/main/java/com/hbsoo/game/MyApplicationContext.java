@@ -2,7 +2,7 @@ package com.hbsoo.game;
 
 import com.hbsoo.game.commons.GameSpringBeanFactory;
 import com.hbsoo.game.commons.ServerHolder;
-import com.hbsoo.game.inner.MessageInformer;
+import com.hbsoo.game.inner.InnerMessageInformer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +18,8 @@ public class MyApplicationContext {
     }
 
     @Bean
-    public MessageInformer messageInformer() {
-        return new MessageInformer();
+    public InnerMessageInformer innerMessageInformer() {
+        return new InnerMessageInformer();
     }
 
     @Bean
