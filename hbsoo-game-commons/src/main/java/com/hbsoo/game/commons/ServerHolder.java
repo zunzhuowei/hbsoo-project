@@ -22,6 +22,8 @@ public class ServerHolder {
     @Value("${serverId}")
     private String fromServerId;
 
+    public static ServerType nowServerType = null;
+
     /**
      * 保存服务器id
      * @param type 服务器类型
@@ -30,6 +32,7 @@ public class ServerHolder {
     public void saveServerId(ServerType type, String serverId) {
         final RSet<String> set = redissonClient.getSet("serverIdSet");
         set.add(type.toString() + ":" + serverId);
+        nowServerType = type;
     }
 
     /**
@@ -49,8 +52,8 @@ public class ServerHolder {
      * @return 服务器id
      */
     public String getServerId(ServerType type, String serverId) {
-        final RSet<String> set = redissonClient.getSet("serverIdSet");
-        Optional<String> opt = set.stream().filter(e -> e.equals(type.toString() + ":" + serverId)).findFirst();
+        final List<String> serverIds = getServerIds(type);
+        Optional<String> opt = serverIds.stream().filter(e -> e.equals(type.toString() + ":" + serverId)).findFirst();
         return opt.orElse(null);
     }
 
@@ -62,7 +65,7 @@ public class ServerHolder {
      */
     public void saveServerId(Long playerId, ServerType type, String serverId) {
         final RBucket<String> bucket = redissonClient.getBucket(playerId + ":" + type.toString());
-        bucket.set(serverId);
+        bucket.set(type + ":" + serverId);
     }
 
     /**

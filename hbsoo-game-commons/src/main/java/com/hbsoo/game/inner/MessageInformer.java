@@ -49,7 +49,7 @@ public class MessageInformer {
         message.setDataJson(json);
         message.setBatch(isArrJson);
         message.setToServerId(toServerId);
-        message.setFromServerId(fromServerId);
+        message.setFromServerId(ServerHolder.nowServerType + ":" + fromServerId);
         if (async) {
             topic.publishAsync(message);
         } else {
@@ -75,7 +75,7 @@ public class MessageInformer {
             log.warn("MessageInformer send serverId is null");
             return;
         }
-        String topicName = serverType == ServerType.HALL ? GameConstants.H2R_TOPIC_NAME : GameConstants.R2H_TOPIC_NAME;
+        String topicName = serverType == ServerType.HALL ? GameConstants.R2H_TOPIC_NAME : GameConstants.H2R_TOPIC_NAME;
         send(serverId, topicName, msgType, delaySeconds, async, isArrJson, msgObj);
     }
 
@@ -103,7 +103,7 @@ public class MessageInformer {
             int next = random.nextInt(serverIds.size());
             serverId = serverIds.get(next);
         }
-        String topicName = serverType == ServerType.HALL ? GameConstants.H2R_TOPIC_NAME : GameConstants.R2H_TOPIC_NAME;
+        String topicName = serverType == ServerType.HALL ? GameConstants.R2H_TOPIC_NAME : GameConstants.H2R_TOPIC_NAME;
         send(serverId, topicName, msgType, delaySeconds, async, isArrJson, msgObj);
     }
 
@@ -124,7 +124,7 @@ public class MessageInformer {
             log.warn("MessageInformer send serverIds is null");
             return;
         }
-        String topicName = serverType == ServerType.ROOM ? GameConstants.H2R_TOPIC_NAME : GameConstants.R2H_TOPIC_NAME;
+        String topicName = serverType == ServerType.HALL ? GameConstants.R2H_TOPIC_NAME : GameConstants.H2R_TOPIC_NAME;
         for (String serverId : serverIds) {
             send(serverId, topicName, msgType, delaySeconds, async, isArrJson, msgObj);
         }
