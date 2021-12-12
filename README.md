@@ -13,3 +13,7 @@ https://github.com/zunzhuowei/hbsoo-project-samples
 
 ## Service design
 
+1. informer
+2. dispatcher
+3. executor
+4. dataManager
