@@ -7,4 +7,5 @@ dependencies {
     testImplementation junit
     implementation commons
     implementation commonsio
+    implementation curator
 }

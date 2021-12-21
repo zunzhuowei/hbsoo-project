@@ -51,6 +51,7 @@ subprojects {
         springbootRedisson='org.redisson:redisson-spring-boot-starter:3.16.1'
         fastjson='com.alibaba:fastjson:1.2.78'
         okhttp='com.squareup.okhttp3:okhttp:4.9.1'
+        curator='org.apache.curator:curator-recipes:5.2.0'
     }
 
     jar {
