@@ -4,6 +4,7 @@ import com.hbsoo.kafka.MyKafkaProperties;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,9 @@ public class KafkaConsumerConfig {
     @Autowired
     private MyKafkaProperties myKafkaProperties;
 
+    @Value("${spring.profiles.active:local}")
+    private String env;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -36,7 +40,7 @@ public class KafkaConsumerConfig {
                 myKafkaProperties.getBootstrapAddress());
         props.put(
                 ConsumerConfig.GROUP_ID_CONFIG,
-                "groupId");
+                myKafkaProperties.getGroupId() + "-" + env);
         props.put(
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class);
@@ -53,7 +57,7 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(10);
+        factory.setConcurrency(myKafkaProperties.getConsumerConcurrency());
         factory.getContainerProperties().setPollTimeout(30000);
         //factory.setBatchListener(true);//设置为批量消费，每个批次数量在Kafka配置参数中设置
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);//设置手动提交ackMode
