@@ -1,0 +1,7 @@
+dependencies {
+    implementation springkafka
+    implementation starterAop
+    implementation fastjson
+    implementation commons
+}
+

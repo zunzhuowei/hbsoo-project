@@ -52,6 +52,8 @@ subprojects {
         fastjson='com.alibaba:fastjson:1.2.78'
         okhttp='com.squareup.okhttp3:okhttp:4.9.1'
         curator='org.apache.curator:curator-recipes:5.2.0'
+        springkafka='org.springframework.kafka:spring-kafka:2.5.16.RELEASE'
+        starterAop = 'org.springframework.boot:spring-boot-starter-aop:' + springBootVersion
     }
 
     jar {
