@@ -12,4 +12,5 @@ include 'hbsoo-game-room'
 include 'hbsoo-game-commons'
 include 'hbsoo-http-tool'
 include 'hbsoo-kafka-support'
+include 'hbsoo-zookeepr-support'
 

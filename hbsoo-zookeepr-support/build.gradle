@@ -1,0 +1,7 @@
+dependencies {
+    testImplementation junit
+    implementation commons
+    implementation commonsio
+    api curator
+}
+
