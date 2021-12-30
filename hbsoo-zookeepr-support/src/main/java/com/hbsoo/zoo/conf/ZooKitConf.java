@@ -1,5 +1,6 @@
 package com.hbsoo.zoo.conf;
 
+import com.hbsoo.zoo.Zookit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -33,5 +34,9 @@ public class ZooKitConf {
         return client;
     }
 
+    @Bean
+    public Zookit zookit(){
+        return new Zookit();
+    }
 
 }

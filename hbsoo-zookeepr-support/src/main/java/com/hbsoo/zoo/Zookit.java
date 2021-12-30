@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * Description:
  */
 @Slf4j
-@Component("zookit")
+//@Component("zookit")
 public class Zookit {
 
     @Resource
