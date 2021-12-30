@@ -1,6 +1,6 @@
 dependencies {
-    implementation springkafka
-    implementation starterAop
+    api springkafka
+    api starterAop
     implementation fastjson
     implementation commons
 }

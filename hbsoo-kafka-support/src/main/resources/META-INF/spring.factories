@@ -1,5 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.hbsoo.kafka.conf.KafkaConsumerConfig,\
 com.hbsoo.kafka.conf.KafkaProducerConfig,\
-com.hbsoo.kafka.conf.KafkaTopicConfig
+com.hbsoo.kafka.conf.KafkaTopicConfig,\
+com.hbsoo.kafka.conf.KafkaConf
 
