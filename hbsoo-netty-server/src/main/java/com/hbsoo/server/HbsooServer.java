@@ -32,6 +32,8 @@ public class HbsooServer {
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
+    private boolean heartbeatCheck = false;
+    private boolean handshakerCheck = false;
 
     /**
      * 创建服务
@@ -53,6 +55,17 @@ public class HbsooServer {
         return this;
     }
 
+    public HbsooServer heartbeatCheck(boolean heartbeatCheck) {
+        this.heartbeatCheck = heartbeatCheck;
+        return this;
+    }
+
+
+    public HbsooServer handshakerCheck(boolean handshakerCheck) {
+        this.handshakerCheck = handshakerCheck;
+        return this;
+    }
+
     /**
      * 选择协议类型
      *
@@ -65,8 +78,12 @@ public class HbsooServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new ProtocolSelectorHandler
-                                (types, ServerChannelManager::add, ServerChannelManager::remove));
+                        pipeline.addLast(new ProtocolSelectorHandler(
+                                types,
+                                ServerChannelManager::add,
+                                ServerChannelManager::remove,
+                                heartbeatCheck,
+                                handshakerCheck));
                     }
                 }
         );

@@ -1,5 +1,6 @@
 package com.hbsoo.handler.processor;
 
+import com.hbsoo.codec.http.Constants;
 import com.hbsoo.codec.protobuf.HBSProtobufDecoder;
 import com.hbsoo.codec.protobuf.HBSProtobufEncoder;
 import com.hbsoo.codec.str.HBSStringDecoder;
@@ -42,14 +43,20 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
     private final Consumer<Channel> addChannelConsumer;
     private final Consumer<Channel> removeChannelConsumer;
     private final Set<ServerProtocolType> serverProtocolTypes;
+    private final boolean heartbeatCheck;
+    private final boolean handshakerCheck;
 
     public ProtocolSelectorHandler(ServerProtocolType[] types,
                                    Consumer<Channel> addChannelConsumer,
-                                   Consumer<Channel> removeChannelConsumer) {
-        serverProtocolTypes = new HashSet<>();
-        serverProtocolTypes.addAll(Arrays.asList(types));
+                                   Consumer<Channel> removeChannelConsumer,
+                                   boolean heartbeatCheck,
+                                   boolean handshakerCheck) {
+        this.serverProtocolTypes = new HashSet<>();
+        this.serverProtocolTypes.addAll(Arrays.asList(types));
         this.addChannelConsumer = addChannelConsumer;
         this.removeChannelConsumer = removeChannelConsumer;
+        this.heartbeatCheck = heartbeatCheck;
+        this.handshakerCheck = handshakerCheck;
     }
 
     /**
@@ -100,9 +107,15 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      * @param pipeline
      */
     private void addHandsakerHandler(ChannelPipeline pipeline) {
-        pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
-        pipeline.addLast(new ServerHeartbeatHandler());
-        pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
+        if (heartbeatCheck) {
+            pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+            pipeline.addLast(new ServerHeartbeatHandler());
+        }
+        if (handshakerCheck) {
+            pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
+        } else {
+            pipeline.channel().attr(Constants.HANDSHAKE_KEY).set(true);
+        }
     }
 
     /**

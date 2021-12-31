@@ -1,5 +1,6 @@
 package com.hbsoo.codec.str;
 
+import com.hbsoo.codec.http.Constants;
 import com.hbsoo.msg.model.HBSMessage;
 import com.hbsoo.msg.model.MsgHeader;
 import com.hbsoo.msg.model.StrMsgHeader;
@@ -22,13 +23,12 @@ import java.util.Objects;
 public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
 
 
-    static AttributeKey<Boolean> HANDSHAKE_KEY = AttributeKey.valueOf("isHandshake");
-
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
-        final Boolean isHandshake = ctx.channel().attr(HANDSHAKE_KEY).get();
+        final Boolean isHandshake = ctx.channel().attr(Constants.HANDSHAKE_KEY).get();
         if (Objects.isNull(isHandshake) || !isHandshake) {
+            log.error("HBSStringDecoder channel is not handshaker");
             ctx.channel().close();
             byteBuf.release();
             return;

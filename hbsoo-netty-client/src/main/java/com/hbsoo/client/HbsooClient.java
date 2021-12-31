@@ -2,6 +2,7 @@ package com.hbsoo.client;
 
 import com.hbsoo.client.heartbeat.HeartbeatHandler;
 import com.hbsoo.client.manager.ClientChannelManager;
+import com.hbsoo.codec.http.Constants;
 import com.hbsoo.handler.constants.HotSwapSwitch;
 import com.hbsoo.handler.processor.channel.handshaker.HBSClientHandshaker;
 import com.hbsoo.handler.cfg.ClientChannelHandlerRegister;
@@ -33,6 +34,8 @@ public class HbsooClient {
     private String connectHost;
     private Integer listenPort;
     private Channel channel;
+    private boolean heartbeatCheck = false;
+    private boolean handshakerCheck = false;
 
     public HbsooClient() {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -42,6 +45,18 @@ public class HbsooClient {
         this.group = group;
         this.bootstrap = bootstrap;
     }
+
+    public HbsooClient heartbeatCheck(boolean heartbeatCheck) {
+        this.heartbeatCheck = heartbeatCheck;
+        return this;
+    }
+
+
+    public HbsooClient handshakerCheck(boolean handshakerCheck) {
+        this.handshakerCheck = handshakerCheck;
+        return this;
+    }
+
 
     /**
      * 选择协议类型
@@ -54,14 +69,18 @@ public class HbsooClient {
             protected void initChannel(SocketChannel ch){
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast(new IdleStateHandler
-                        (0,3,0, TimeUnit.SECONDS));
-                pipeline.addLast(new HeartbeatHandler(hbsooClient));
+                if (heartbeatCheck) {
+                    pipeline.addLast(new IdleStateHandler
+                            (0,3,0, TimeUnit.SECONDS));
+                    pipeline.addLast(new HeartbeatHandler(hbsooClient));
+                }
+                if (handshakerCheck) {
+                    pipeline.addLast(new HBSClientHandshaker(
+                            ClientChannelManager::add,
+                            ClientChannelManager::remove
+                    ));
+                }
 
-                pipeline.addLast(new HBSClientHandshaker(
-                        ClientChannelManager::add,
-                        ClientChannelManager::remove
-                ));
                 final List<ChannelHandler> handler = ClientChannelHandlerRegister.get(type);
                 if (Objects.nonNull(handler)) {
                     pipeline.addLast(handler.toArray(new ChannelHandler[0]));
@@ -97,6 +116,9 @@ public class HbsooClient {
         this.connectHost = connectHost;
         this.listenPort = listenPort;
         Channel ch = this.bootstrap.connect(connectHost, listenPort).sync().channel();
+        if (!handshakerCheck) {
+            ch.attr(Constants.HANDSHAKE_KEY).set(true);
+        }
         this.channel = ch;
         return ch;
     }

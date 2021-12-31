@@ -22,6 +22,8 @@ public class ClientTest {
         final ConfigurableApplicationContext context = SpringApplication.run(ClientTest.class, args);
         final HbsooClient client = context.getBean(HbsooClient.class);
         final Channel channel = client.protocolType(ClientProtocolType.STRING)
+                .handshakerCheck(true)
+                .heartbeatCheck(true)
                 .connect("127.0.0.1", 3333);
 
 

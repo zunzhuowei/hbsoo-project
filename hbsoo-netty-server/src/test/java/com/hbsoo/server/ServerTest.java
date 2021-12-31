@@ -29,6 +29,8 @@ public class ServerTest {
         server.create(1,1)
                 .protocolType(ServerProtocolType.HTTP,ServerProtocolType.STRING)
                 .enableHotSwap(dir)
+                .handshakerCheck(true)
+                .heartbeatCheck(true)
                 .start(3333);
     }
 
