@@ -22,23 +22,27 @@ public class HBSTextWebsocketEncoder extends MessageToMessageEncoder<HBSMessage<
 
     @Override
     protected void encode(ChannelHandlerContext ctx, HBSMessage<String> msg, List<Object> out) throws Exception {
-        final MsgHeader header = msg.getHeader();
-        final String content = msg.getContent();
-        final short magicNum = header.getMagicNum();
-        final short version = header.getVersion();
-        final int msgLen = header.getMsgLen();
-        final int msgType = header.getMsgType();
+        if (msg.getContent() instanceof String) {
+            final MsgHeader header = msg.getHeader();
+            final String content = msg.getContent();
+            final short magicNum = header.getMagicNum();
+            final short version = header.getVersion();
+            final int msgLen = header.getMsgLen();
+            final int msgType = header.getMsgType();
 
-        ByteBuf buffer = Unpooled.buffer(msgLen);
-        buffer.writeShort(magicNum)
-                .writeShort(version)
-                .writeInt(msgLen)
-                .writeShort(msgType);
-                //.writeBytes();
+            ByteBuf buffer = Unpooled.buffer(msgLen);
+            buffer.writeShort(magicNum)
+                    .writeShort(version)
+                    .writeInt(msgLen)
+                    .writeShort(msgType);
+            //.writeBytes();
 
-        buffer.writeBytes(content.getBytes());
-        TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(buffer);
-        out.add(textWebSocketFrame);
+            buffer.writeBytes(content.getBytes());
+            TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(buffer);
+            out.add(textWebSocketFrame);
+        } else {
+            out.add(msg);
+        }
     }
 
 }

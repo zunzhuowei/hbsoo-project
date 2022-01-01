@@ -11,6 +11,7 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2021/7/30.
@@ -21,23 +22,27 @@ public class HBSBinaryWebsocketEncoder extends MessageToMessageEncoder<HBSMessag
 
     @Override
     protected void encode(ChannelHandlerContext ctx, HBSMessage<ByteBuf> msg, List<Object> out) throws Exception {
-        final MsgHeader header = msg.getHeader();
-        final ByteBuf content = msg.getContent();
-        final short magicNum = header.getMagicNum();
-        final short version = header.getVersion();
-        final int msgLen = header.getMsgLen();
-        final int msgType = header.getMsgType();
+        if (msg.getContent() instanceof ByteBuf) {
+            final MsgHeader header = msg.getHeader();
+            final ByteBuf content = msg.getContent();
+            final short magicNum = header.getMagicNum();
+            final short version = header.getVersion();
+            final int msgLen = header.getMsgLen();
+            final int msgType = header.getMsgType();
 
-        ByteBuf buffer = Unpooled.buffer(msgLen);
-        buffer.writeShort(magicNum)
-                .writeShort(version)
-                .writeInt(msgLen)
-                .writeShort(msgType);
-                //.writeBytes();
+            ByteBuf buffer = Unpooled.buffer(msgLen);
+            buffer.writeShort(magicNum)
+                    .writeShort(version)
+                    .writeInt(msgLen)
+                    .writeShort(msgType);
+            //.writeBytes();
 
-        buffer.writeBytes(content);
-        BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
-        out.add(binaryWebSocketFrame);
+            buffer.writeBytes(content);
+            BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
+            out.add(binaryWebSocketFrame);
+        } else {
+            out.add(msg);
+        }
     }
 
 }
