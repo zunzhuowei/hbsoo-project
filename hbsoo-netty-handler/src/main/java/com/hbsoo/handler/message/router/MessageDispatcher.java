@@ -138,7 +138,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("protocol string msgType [{}] handler not found!", msgType);
+                    log.warn("protocol string msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
                 break;
             }
@@ -158,7 +158,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("protocol websocket text msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket text msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
                 break;
             }
@@ -178,7 +178,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("protocol websocket binary msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket binary msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
                 break;
             }
@@ -198,7 +198,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("protocol protobuf msgType [{}] handler not found!", msgType);
+                    log.warn("protocol protobuf msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
                 break;
             }
@@ -218,7 +218,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("protocol websocket protobuf msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket protobuf msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
                 break;
             }
@@ -244,7 +244,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.info("http not exist uri handler [{}]", split[0]);
+                    log.info("http not exist uri handler [{}],msg = {}", split[0], msg);
                     final DefaultFullHttpResponse response =
                             HttpUtils.resp(null, RespType.HTML, true, HttpResponseStatus.NOT_FOUND).get();
                     channel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
