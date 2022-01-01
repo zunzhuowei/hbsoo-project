@@ -31,6 +31,9 @@ import java.util.function.Function;
 @Slf4j
 public final class MessageDispatcher {
 
+    //参数初始化
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+
     /**
      * 延迟队列
      */
@@ -38,7 +41,7 @@ public final class MessageDispatcher {
     /***
      * 线程池
      */
-    static ExecutorService executorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+    static ExecutorService executorService = Executors.newFixedThreadPool(CPU_COUNT * 50, new ThreadFactory() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
         @Override
@@ -135,7 +138,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("msgType [{}] handler not found!", msgType);
+                    log.warn("protocol string msgType [{}] handler not found!", msgType);
                 }
                 break;
             }
@@ -155,7 +158,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket text msgType [{}] handler not found!", msgType);
                 }
                 break;
             }
@@ -175,7 +178,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket binary msgType [{}] handler not found!", msgType);
                 }
                 break;
             }
@@ -195,7 +198,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("msgType [{}] handler not found!", msgType);
+                    log.warn("protocol protobuf msgType [{}] handler not found!", msgType);
                 }
                 break;
             }
@@ -215,7 +218,7 @@ public final class MessageDispatcher {
                     }
                 }
                 if (!b) {
-                    log.warn("msgType [{}] handler not found!", msgType);
+                    log.warn("protocol websocket protobuf msgType [{}] handler not found!", msgType);
                 }
                 break;
             }
