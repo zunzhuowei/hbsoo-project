@@ -27,7 +27,7 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
             final String text = webSocketFrame.text();
             final HBSMessage<String> message = HBSMessage.create(String.class);
             StrMsgHeader strMsgHeader = new StrMsgHeader();
-            strMsgHeader.setMsgType((short) 1);
+            strMsgHeader.setMsgType(Short.MIN_VALUE);
             message.setHeader(strMsgHeader);
             message.setContent(text);
             MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_TEXT);
@@ -49,7 +49,7 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
             final ByteBuf content = webSocketFrame.content();
             final HBSMessage<ByteBuf> message = HBSMessage.create(ByteBuf.class);
             MsgHeader msgHeader = new MsgHeader();
-            msgHeader.setMsgType((short) 1);
+            msgHeader.setMsgType(Short.MIN_VALUE);
             message.setHeader(msgHeader);
             message.setContent(content);
             MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_BINARY);
