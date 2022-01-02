@@ -44,12 +44,12 @@ public class GlobalExceptionHandler extends SimpleChannelInboundHandler<Object> 
         }
         // string 协议消息
         if (Objects.equals(msgType, "string")) {
-            HBSMessage<String> message = new HBSMessage<>();
-            final StrMsgHeader header = new StrMsgHeader();
+            HBSMessage<String> message = HBSMessage.create(String.class);
+            //final StrMsgHeader header = new StrMsgHeader();
             String errMsg = cause.getMessage();
             errMsg = Objects.isNull(errMsg) ? "" : errMsg;
-            header.setMsgLen(errMsg.getBytes().length);
-            message.setHeader(header).setContent(errMsg);
+            //header.setMsgLen(errMsg.getBytes().length);
+            message.content(errMsg);
             ctx.channel().writeAndFlush(message);
             return;
         }

@@ -62,11 +62,11 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
         }
 
-        MsgHeader header = new MsgHeader();
+        /*MsgHeader header = new MsgHeader();
         header.setMagicNum(magicNum);
         header.setVersion(version);
         header.setMsgLen(contentLength);
-        header.setMsgType(messageType);
+        header.setMsgType(messageType);*/
 
         // 读出缓冲区中的消息头
         byteBuf.skipBytes(MsgHeader.HEADER_LENGTH);
@@ -75,11 +75,15 @@ public class HBSStringDecoder extends MessageToMessageDecoder<ByteBuf> {
         byte[] datas = new byte[contentLength];
         byteBuf.readBytes(datas);
 
-        HBSMessage<String> message = new HBSMessage<>();
+        final HBSMessage<String> message= HBSMessage.create(String.class);
+        //HBSMessage<String> message = new HBSMessage<>();
         for (int i = 0; i < datas.length; i++) {
             datas[i] = (byte) (datas[i] ^ version);
         }
-        message.setHeader(header).setContent(new String(datas, StandardCharsets.UTF_8));
+        message.magicNum(magicNum).version(version)
+                .msgLen(contentLength).messageType(messageType)
+                .content(new String(datas, StandardCharsets.UTF_8));
+        //message.setHeader(header).setContent(new String(datas, StandardCharsets.UTF_8));
         out.add(message);
     }
 }

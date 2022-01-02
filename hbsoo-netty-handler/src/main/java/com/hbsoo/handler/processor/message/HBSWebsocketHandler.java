@@ -26,10 +26,11 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
             TextWebSocketFrame webSocketFrame = (TextWebSocketFrame) msg;
             final String text = webSocketFrame.text();
             final HBSMessage<String> message = HBSMessage.create(String.class);
-            StrMsgHeader strMsgHeader = new StrMsgHeader();
-            strMsgHeader.setMsgType(Short.MIN_VALUE);
-            message.setHeader(strMsgHeader);
-            message.setContent(text);
+            //StrMsgHeader strMsgHeader = new StrMsgHeader();
+            //strMsgHeader.setMsgType(Short.MIN_VALUE);
+            //message.setHeader(strMsgHeader);
+            //message.setContent(text);
+            message.messageType(Short.MIN_VALUE).content(text);
             MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_TEXT);
         }
         if (msg instanceof PingWebSocketFrame) {
@@ -48,10 +49,11 @@ public class HBSWebsocketHandler extends SimpleChannelInboundHandler<WebSocketFr
             BinaryWebSocketFrame webSocketFrame = (BinaryWebSocketFrame) msg;
             final ByteBuf content = webSocketFrame.content();
             final HBSMessage<ByteBuf> message = HBSMessage.create(ByteBuf.class);
-            MsgHeader msgHeader = new MsgHeader();
-            msgHeader.setMsgType(Short.MIN_VALUE);
-            message.setHeader(msgHeader);
-            message.setContent(content);
+            //MsgHeader msgHeader = new MsgHeader();
+            //msgHeader.setMsgType(Short.MIN_VALUE);
+            //message.setHeader(msgHeader);
+            //message.setContent(content);
+            message.messageType(Short.MIN_VALUE).content(content);
             MessageDispatcher.dispatchMsg(ctx.channel(), message, ServerProtocolType.WEBSOCKET_BINARY);
         }
     }

@@ -67,11 +67,11 @@ public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
         }
 
-        MsgHeader header = new MsgHeader();
+        /*MsgHeader header = new MsgHeader();
         header.setMagicNum(magicNum);
         header.setVersion(version);
         header.setMsgLen(contentLength);
-        header.setMsgType(messageType);
+        header.setMsgType(messageType);*/
 
         // 读出缓冲区中的消息头
         byteBuf.skipBytes(MsgHeader.HEADER_LENGTH);
@@ -79,9 +79,12 @@ public class HBSProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
         // 读出 content 消息体
         byte[] datas = new byte[contentLength];
         byteBuf.readBytes(datas);
-
-        HBSMessage<byte[]> message = new HBSMessage<>();
-        message.setHeader(header).setContent(datas);
+        HBSMessage<byte[]> message = HBSMessage.create(byte[].class);
+        message.magicNum(magicNum).version(version)
+                .msgLen(contentLength).messageType(messageType)
+                .content(datas);
+        //HBSMessage<byte[]> message = new HBSMessage<>();
+       // message.setHeader(header).setContent(datas);
         out.add(message);
     }
 }

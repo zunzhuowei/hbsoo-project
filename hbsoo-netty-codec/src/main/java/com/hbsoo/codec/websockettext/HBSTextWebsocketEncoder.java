@@ -23,20 +23,24 @@ public class HBSTextWebsocketEncoder extends MessageToMessageEncoder<HBSMessage<
     @Override
     protected void encode(ChannelHandlerContext ctx, HBSMessage<String> msg, List<Object> out) throws Exception {
         if (msg.getContent() instanceof String) {
-            final MsgHeader header = msg.getHeader();
             final String content = msg.getContent();
+
+            //浏览器 Could not decode a text frame as UTF-8.
+
+            /*final MsgHeader header = msg.getHeader();
             final short magicNum = header.getMagicNum();
             final short version = header.getVersion();
             final int msgLen = header.getMsgLen();
-            final int msgType = header.getMsgType();
+            final int msgType = header.getMsgType();*/
 
-            ByteBuf buffer = Unpooled.buffer(msgLen);
+            /*ByteBuf buffer = Unpooled.buffer(msgLen);
             buffer.writeShort(magicNum)
                     .writeShort(version)
                     .writeInt(msgLen)
-                    .writeShort(msgType);
+                    .writeShort(msgType);*/
             //.writeBytes();
 
+            ByteBuf buffer = Unpooled.buffer(content.getBytes().length);
             buffer.writeBytes(content.getBytes());
             TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(buffer);
             out.add(textWebSocketFrame);
