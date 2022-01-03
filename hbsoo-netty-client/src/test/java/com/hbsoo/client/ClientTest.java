@@ -41,11 +41,8 @@ public class ClientTest {
                     } else if (msg.toLowerCase().startsWith("text")) {
 
                     } else {
-                        HBSMessage<String> message = new HBSMessage<>();
-                        MsgHeader msgHeader = new StrMsgHeader();
-                        msgHeader.setMsgLen(msg.getBytes().length);
-                        msgHeader.setMsgType((short) 1);
-                        message.setHeader(msgHeader).setContent(msg);
+                        HBSMessage<String> message = HBSMessage.create(String.class);
+                        message.msgType(1).content(msg);
                         channel.writeAndFlush(message);
                     }
                 } catch (Exception e) {
