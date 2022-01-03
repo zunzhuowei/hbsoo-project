@@ -81,6 +81,18 @@ public class HBSMessage<T> {
         return this;
     }
 
+    public HBSMessage<T> msgType(short msgType) {
+        return this.messageType(msgType);
+    }
+
+    public HBSMessage<T> msgType(int msgType) {
+        return this.messageType((short) msgType);
+    }
+
+    public HBSMessage<T> messageType(int msgType) {
+        return this.messageType((short) msgType);
+    }
+
     public HBSMessage<T> msgLen(int msgLen) {
         this.header.setMsgLen(msgLen);
         return this;
