@@ -17,6 +17,10 @@ public class RMIServer {
         LocateRegistry.createRegistry(1099);
         final Registry registry = LocateRegistry.getRegistry();
         registry.bind("Compute", remoteMath);
+
+        IDataManager dataManager = new DataManager();
+        registry.bind("DataManager", dataManager);
+
         System.out.println("Math server ready");
 
         //如果不想再让改对象被继续调用，使用下面一行代码
