@@ -54,10 +54,12 @@ subprojects {
         curator='org.apache.curator:curator-recipes:5.2.0'
         springkafka='org.springframework.kafka:spring-kafka:2.5.16.RELEASE'
         starterAop = 'org.springframework.boot:spring-boot-starter-aop:' + springBootVersion
+        grcp = 'io.grpc:grpc-all:1.43.1'
     }
 
     jar {
         manifest.attributes provider: 'gradle'
+        //duplicatesStrategy = 'WARN'
     }
 
     repositories {

@@ -10,20 +10,19 @@ buildscript {
 //apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 
+
+dependencies {
+    implementation grcp
+}
+
 sourceSets {
     main {
         proto {
-            srcDir 'src/main/proto'
+            //srcDir 'src/main/proto'
             include '**/*.proto'
         }
         java {
-            srcDir 'src/main/java'
-        }
-    }
-    test {
-        proto {
-            // In addition to the default 'src/test/proto'
-            srcDir 'src/test/protocolbuffers'
+            srcDirs 'src/main/java','src/main/grpc'
         }
     }
 }
@@ -62,4 +61,11 @@ protobuf {
             }
         }
     }
+
+    /*
+    更改编译代码输出位置：
+    默认生成的java代码输出位置为 $generatedFilesBaseDir/$sourceSet/$builtinPluginName ,其中：
+    $generatedFilesBaseDir = $buildDir/generated/source/proto ，更改输出配置如下：
+     */
+    generatedFilesBaseDir = "$projectDir/src"
 }
