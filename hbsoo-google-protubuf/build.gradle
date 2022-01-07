@@ -53,7 +53,10 @@ protobuf {
                     //option 'example_option1=true'
                     //option 'example_option2'
                 }
+                // 需要生成什么语言，打开相应注释
                 //cpp {}
+                //js {}
+                //python{}
             }
 
             task.plugins {
