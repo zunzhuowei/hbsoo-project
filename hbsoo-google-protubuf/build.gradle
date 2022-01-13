@@ -72,3 +72,13 @@ protobuf {
      */
     generatedFilesBaseDir = "$projectDir/src"
 }
+
+tasks.named("processResources").configure(task -> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+})
+tasks.named("sourceJar").configure(task -> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+})
+tasks.named("jar").configure(task -> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+})
