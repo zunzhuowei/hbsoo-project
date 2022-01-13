@@ -260,8 +260,8 @@ public class Zookit {
     /**
      * 获取节点下所有的子节点路径列表
      *
-     * @param nodePath 节点目录
-     * @return 子节点路径列表
+     * @param nodePath 节点目录; 如：/mydata/test
+     * @return 子节点路径列表; 如：child1
      * @throws Exception 异常
      */
     public List<String> getNoteAllChildNodePathList(String nodePath) throws Exception {
