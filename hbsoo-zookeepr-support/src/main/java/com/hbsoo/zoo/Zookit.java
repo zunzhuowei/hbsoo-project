@@ -301,6 +301,25 @@ public class Zookit {
      * @param nodeCacheListener org.apache.curator.framework.recipes.cache.NodeCacheListener
      * @throws Exception 异常
      */
+    public void listenNoteAlways2(String nodePath, NodeCacheListener nodeCacheListener) throws Exception {
+        CuratorCache curatorCache = CuratorCache.build(curatorFramework, nodePath);
+        curatorCache.start();
+        if (curatorCache.get(nodePath).isPresent()) {
+            log.info("节点初始化数据为：" + new String(curatorCache.get(nodePath).toString()));
+        } else {
+            log.info(("节点初始化数据为空..."));
+        }
+        CuratorCacheListener listener = CuratorCacheListener.builder().forNodeCache(nodeCacheListener).build();
+        curatorCache.listenable().addListener(listener);
+    }
+
+    /**
+     * 监听某个节点路径的数据变更
+     *
+     * @param nodePath          节点目录
+     * @param nodeCacheListener org.apache.curator.framework.recipes.cache.NodeCacheListener
+     * @throws Exception 异常
+     */
     public void listenNoteAlways(String nodePath, NodeCacheListener nodeCacheListener) throws Exception {
         // NodeCache: 缓存节点，并且可以监听数据节点的变更，会触发事件
         final NodeCache nodeCache = new NodeCache(curatorFramework, nodePath);
@@ -331,6 +350,27 @@ public class Zookit {
 //        });
 
         nodeCache.getListenable().addListener(nodeCacheListener);
+    }
+
+    /**
+     * 监听父级路径下面的所有 子节点增删改；
+     *
+     * @param nodePath                  节点目录
+     * @param pathChildrenCacheListener org.apache.curator.framework.recipes.cache.PathChildrenCacheListener
+     * @throws Exception 异常
+     */
+    public void listenNoteChildListAlways2(String nodePath, PathChildrenCacheListener pathChildrenCacheListener) throws Exception {
+        CuratorCache curatorCache = CuratorCache.build(curatorFramework, nodePath);
+        curatorCache.start();
+        curatorCache.stream().forEach(childData -> {
+            log.info("\t* 子节点路径：" + childData.getPath() + "，该节点的数据为：" + new String(childData.getData()));
+
+        });
+        // 添加事件监听器
+        final CuratorCacheListener listener = CuratorCacheListener.builder()
+                .forPathChildrenCache(nodePath, curatorFramework, pathChildrenCacheListener)
+                .build();
+        curatorCache.listenable().addListener(listener);
     }
 
     /**
@@ -384,6 +424,37 @@ public class Zookit {
 
         // 添加事件监听器
         childrenCache.getListenable().addListener(pathChildrenCacheListener);
+    }
+
+    /**
+     * 3.2 使用
+     * <p>
+     * 还是一样的套路，在使用前需要调用start()；用完之后需要调用close()方法。
+     * <p>
+     * 随时都可以调用getCurrentData()获取当前缓存的状态和数据。
+     * <p>
+     * 也可以通过getListenable()获取监听器容器，并在此基础上增加自定义监听器：
+     * <p>
+     * public void addListener(NodeCacheListener listener)
+     * <p>
+     * 不过与Path Cache，以及Node Cache不一样的是：
+     * <p>
+     * 多了一个getCurrentChildren()方法
+     * 返回path下多个子节点的缓存数据
+     * 封装成一个Map<String,ChildData>返回
+     * 没有很精准的进行数据同步
+     * 可以当作一份快照使用
+     *
+     * @param nodePath 节点目录
+     * @param treeCacheListener org.apache.curator.framework.recipes.cache.TreeCacheListener
+     * @throws Exception 异常
+     */
+    public void listenNoteTreeAlways2(String nodePath, TreeCacheListener treeCacheListener) throws Exception {
+        CuratorCache curatorCache = CuratorCache.build(curatorFramework, nodePath);
+        curatorCache.start();
+        final CuratorCacheListener listener = CuratorCacheListener.builder()
+                .forTreeCache(curatorFramework, treeCacheListener).build();
+        curatorCache.listenable().addListener(listener);
     }
 
     /**
