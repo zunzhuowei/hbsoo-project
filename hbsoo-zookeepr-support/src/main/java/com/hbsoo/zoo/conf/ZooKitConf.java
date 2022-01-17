@@ -26,7 +26,7 @@ public class ZooKitConf {
     @Autowired
     private ZooKitProperties zooKitProperties;
 
-    @Bean(destroyMethod = "close",)
+    @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(CuratorFramework.class)
     public CuratorFramework curatorFramework() {
         String listOfServers = zooKitProperties.getListOfServers();
