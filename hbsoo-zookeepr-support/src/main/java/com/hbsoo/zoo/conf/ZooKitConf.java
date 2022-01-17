@@ -30,7 +30,7 @@ public class ZooKitConf {
     @ConditionalOnMissingBean(CuratorFramework.class)
     public CuratorFramework curatorFramework() {
         String listOfServers = zooKitProperties.getListOfServers();
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 29, 1000);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 29);
         CuratorFramework client = CuratorFrameworkFactory.newClient(listOfServers, retryPolicy);
         client.start();
         return client;
