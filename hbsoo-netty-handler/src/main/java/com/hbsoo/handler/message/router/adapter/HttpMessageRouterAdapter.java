@@ -75,7 +75,7 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
      * @param html HTML
      * @return 返回值
      */
-    protected DefaultFullHttpResponse html(String html) {
+    public DefaultFullHttpResponse html(String html) {
         byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
         return HttpUtils.resp(bytes, RespType.HTML, true, HttpResponseStatus.OK).get();
     }
@@ -86,7 +86,7 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
      * @param json json
      * @return 返回值
      */
-    protected DefaultFullHttpResponse json(String json) {
+    public DefaultFullHttpResponse json(String json) {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         return HttpUtils.resp(bytes, RespType.JSON, true, HttpResponseStatus.OK).get();
     }
