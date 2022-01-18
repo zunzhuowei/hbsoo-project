@@ -47,7 +47,17 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
         httpParam.setParamsMap(parse);
         final DefaultFullHttpResponse resp = handler(split[0], httpParam);
         log.debug("http message response --::{}", resp);
-        channel.writeAndFlush(resp).addListener(ChannelFutureListener.CLOSE);
+        boolean autoResp = autoResp();
+        if (autoResp) {
+            channel.writeAndFlush(resp).addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    /**
+     * 是否自动返回
+     */
+    protected boolean autoResp() {
+        return true;
     }
 
     /**

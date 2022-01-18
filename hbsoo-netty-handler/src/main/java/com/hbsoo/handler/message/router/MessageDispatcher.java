@@ -137,6 +137,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.warn("protocol string msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
@@ -157,6 +159,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.warn("protocol websocket text msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
@@ -177,6 +181,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.warn("protocol websocket binary msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
@@ -197,6 +203,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.warn("protocol protobuf msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
@@ -217,6 +225,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.warn("protocol websocket protobuf msgType [{}] handler not found!,msg = {}", msgType, msg);
                 }
@@ -243,6 +253,8 @@ public final class MessageDispatcher {
                         }
                     }
                 }
+                //default handler
+                b = defaultHandler(channel, msg, protocolType, b);
                 if (!b) {
                     log.info("http not exist uri handler [{}],msg = {}", split[0], msg);
                     final DefaultFullHttpResponse response =
@@ -255,27 +267,57 @@ public final class MessageDispatcher {
     }
 
     /**
+     * 默认处理器
+     * @param channel
+     * @param msg
+     * @param protocolType
+     * @param b
+     * @return
+     */
+    private static boolean defaultHandler(Channel channel, Object msg, ServerProtocolType protocolType, boolean b) {
+        if (!b) {
+            final List<DefaultMessageHandler> defaultMessageRouter = getDefaultMessageRouter(protocolType);
+            for (DefaultMessageHandler defaultMessageHandler : defaultMessageRouter) {
+                try {
+                    defaultMessageHandler.handler(channel, msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                b = true;
+            }
+        }
+        return b;
+    }
+
+    /**
      * 获取消息路由列表
      *
      * @param protocolType 消息协议类型
      * @return 路由列表
      */
+    private static List<DefaultMessageHandler> getDefaultMessageRouter(ServerProtocolType protocolType) {
+        return getRouter(protocolType, DefaultMessageHandler.class);
+    }
     private static List<MessageRouter> getMessageRouter(ServerProtocolType protocolType) {
-        final BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>>
-                routerFun = getRouterFun(HotSwapSwitch.enable);
+        return getRouter(protocolType, MessageRouter.class);
+    }
+
+    private static <T> List<T> getRouter(ServerProtocolType protocolType, Class<T> tClass) {
+        final BiFunction<Class<T>, Class<? extends Annotation>, List<T>>
+                routerFun = getRouterFun(HotSwapSwitch.enable, tClass);
         switch (protocolType) {
             case STRING:
-                return routerFun.apply(MessageRouter.class, StrHandler.class);
+                return routerFun.apply(tClass, StrHandler.class);
             case PROTOBUF:
-                return routerFun.apply(MessageRouter.class, ProtobufHandler.class);
+                return routerFun.apply(tClass, ProtobufHandler.class);
             case WEBSOCKET_PROTOBUF:
-                return routerFun.apply(MessageRouter.class, WebSocketProtobufHandler.class);
+                return routerFun.apply(tClass, WebSocketProtobufHandler.class);
             case WEBSOCKET_BINARY:
-                return routerFun.apply(MessageRouter.class, BinaryWebSocketHandler.class);
+                return routerFun.apply(tClass, BinaryWebSocketHandler.class);
             case WEBSOCKET_TEXT:
-                return routerFun.apply(MessageRouter.class, TextWebSocketHandler.class);
+                return routerFun.apply(tClass, TextWebSocketHandler.class);
             case HTTP:
-                return routerFun.apply(MessageRouter.class, HttpHandler.class);
+                return routerFun.apply(tClass, HttpHandler.class);
         }
         return new ArrayList<>();
     }
@@ -286,7 +328,8 @@ public final class MessageDispatcher {
      * @param hotSwapEnable 是否使用热更
      * @return 消息协议路由函数
      */
-    private static BiFunction<Class<MessageRouter>, Class<? extends Annotation>, List<MessageRouter>> getRouterFun(boolean hotSwapEnable) {
+    private static <T> BiFunction<Class<T>, Class<? extends Annotation>, List<T>>
+    getRouterFun(boolean hotSwapEnable, Class<T> tClass) {
         if (hotSwapEnable) {
             return HotSwapHolder::getHotSwapBean;
         }
