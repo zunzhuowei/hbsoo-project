@@ -6,6 +6,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.retry.RetryNTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,8 +31,14 @@ public class ZooKitConf {
     @ConditionalOnMissingBean(CuratorFramework.class)
     public CuratorFramework curatorFramework() {
         String listOfServers = zooKitProperties.getListOfServers();
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 29);
-        CuratorFramework client = CuratorFrameworkFactory.newClient(listOfServers, retryPolicy);
+        //RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 29);
+        //CuratorFramework client = CuratorFrameworkFactory.newClient(listOfServers, retryPolicy);
+        CuratorFramework client = CuratorFrameworkFactory.newClient(
+                listOfServers,
+                60000,
+                5000,
+                new RetryNTimes(Integer.MAX_VALUE, 1000));
+
         client.start();
         return client;
     }
