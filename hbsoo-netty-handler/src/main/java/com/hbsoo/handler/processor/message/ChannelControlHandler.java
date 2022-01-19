@@ -1,18 +1,11 @@
 package com.hbsoo.handler.processor.message;
 
-import com.hbsoo.commons.NettyServerConstants;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.SocketAddress;
-import java.util.Objects;
 import java.util.function.Consumer;
-
-import static com.hbsoo.handler.constants.Constants.HANDSHAKE_KEY;
 
 /**
  * Created by zun.wei on 2022/1/19.
@@ -52,5 +45,8 @@ public class ChannelControlHandler extends ChannelInboundHandlerAdapter {
         super.channelInactive(ctx);
     }
 
-
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        super.channelRead(ctx, msg);
+    }
 }

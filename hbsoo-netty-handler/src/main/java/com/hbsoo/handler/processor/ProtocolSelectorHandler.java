@@ -84,6 +84,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
             addHandsakerHandler(pipeline);
             addCustomProtocolHandlers(pipeline);
         } else {
+            pipeline.addLast(new ChannelControlHandler(addChannelConsumer, removeChannelConsumer));
             if (isWebSocketUrl(in)) {
                 final boolean containsWebsocket = serverProtocolTypes.contains(WEBSOCKET);
                 if (containsWebsocket) {
