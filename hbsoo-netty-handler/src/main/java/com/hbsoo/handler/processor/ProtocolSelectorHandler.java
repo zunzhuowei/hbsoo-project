@@ -115,6 +115,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
             pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
         } else {
             pipeline.channel().attr(Constants.HANDSHAKE_KEY).set(true);
+            pipeline.addLast(new ChannelControlHandler(addChannelConsumer, removeChannelConsumer));
         }
     }
 
