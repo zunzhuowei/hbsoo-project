@@ -9,6 +9,7 @@ public class ProcessorHolderTest {
 
 
     public static void main(String[] args) {
+        ProcessorHolder.setAsyncThreads(100);
         ProcessorHolder.getHolder()
                 .addLast(new ItemProcessor<Object, String>()
                         .setType(ProcessorType.MULTI)

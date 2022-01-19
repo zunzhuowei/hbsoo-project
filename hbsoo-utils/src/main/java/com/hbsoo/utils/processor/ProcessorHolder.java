@@ -18,6 +18,15 @@ public final class ProcessorHolder {
 
 
     private final List<ItemProcessor> itemProcessors = new ArrayList<>();
+    private static int asyncThreads = Runtime.getRuntime().availableProcessors() * 2;
+
+    static int getAsyncThreads() {
+        return asyncThreads;
+    }
+
+    public static void setAsyncThreads(int asyncThreads) {
+        ProcessorHolder.asyncThreads = asyncThreads;
+    }
 
     private ProcessorHolder(){}
 

@@ -17,11 +17,11 @@ final class MultiThreadProcessor implements Processor {
     /**
      * cpu核心数
      */
-    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    //private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     /**
      * 异步线程数
      */
-    public static final int asyncThreads = CPU_COUNT * 2;
+    public static final int asyncThreads = ProcessorHolder.getAsyncThreads();
 
     private static final Random random = new Random();
 
