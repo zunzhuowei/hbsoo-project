@@ -53,7 +53,7 @@ subprojects {
         fastjson='com.alibaba:fastjson:1.2.78'
         okhttp='com.squareup.okhttp3:okhttp:4.9.1'
         curator='org.apache.curator:curator-recipes:5.2.0'
-        springkafka='org.springframework.kafka:spring-kafka:2.5.16.RELEASE'
+        springkafka='org.springframework.kafka:spring-kafka:2.8.2'
         starterAop = 'org.springframework.boot:spring-boot-starter-aop:' + springBootVersion
         grcp = 'io.grpc:grpc-all:1.43.1'
     }
