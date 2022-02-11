@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -56,14 +57,18 @@ public class ChannelControlHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        channelAddConsumer.accept(ctx);
+        if (Objects.nonNull(channelAddConsumer)) {
+            channelAddConsumer.accept(ctx);
+        }
         addChannelConsumer.accept(ctx.channel());
         super.handlerAdded(ctx);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        channelRemoveConsumer.accept(ctx);
+        if (Objects.nonNull(channelRemoveConsumer)) {
+            channelRemoveConsumer.accept(ctx);
+        }
         removeChannelConsumer.accept(ctx.channel());
         super.handlerRemoved(ctx);
     }
