@@ -8,10 +8,7 @@ import com.hbsoo.utils.commons.GroovySrcScanner;
 import com.hbsoo.utils.hotswap.HotSwapClass;
 import com.hbsoo.utils.hotswap.HotSwapHolder;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -21,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Created by zun.wei on 2021/7/29.
@@ -34,6 +32,8 @@ public class HbsooServer {
     private EventLoopGroup workerGroup;
     private boolean heartbeatCheck = false;
     private boolean handshakerCheck = false;
+    private Consumer<ChannelHandlerContext> channelAddConsumer;
+    private Consumer<ChannelHandlerContext> channelRemoveConsumer;
 
     /**
      * 创建服务
@@ -66,6 +66,16 @@ public class HbsooServer {
         return this;
     }
 
+    public HbsooServer channelAddConsumer(Consumer<ChannelHandlerContext> channelAddConsumer) {
+        this.channelAddConsumer = channelAddConsumer;
+        return this;
+    }
+
+    public HbsooServer channelRemoveConsumer(Consumer<ChannelHandlerContext> channelRemoveConsumer) {
+        this.channelRemoveConsumer = channelRemoveConsumer;
+        return this;
+    }
+
     /**
      * 选择协议类型
      *
@@ -83,7 +93,9 @@ public class HbsooServer {
                                 ServerChannelManager::add,
                                 ServerChannelManager::remove,
                                 heartbeatCheck,
-                                handshakerCheck));
+                                handshakerCheck,
+                                channelAddConsumer,
+                                channelRemoveConsumer));
                     }
                 }
         );

@@ -15,12 +15,18 @@ public class ChannelControlHandler extends ChannelInboundHandlerAdapter {
 
     private final Consumer<Channel> addChannelConsumer;
     private final Consumer<Channel> removeChannelConsumer;
+    private final Consumer<ChannelHandlerContext> channelAddConsumer;
+    private final Consumer<ChannelHandlerContext> channelRemoveConsumer;
 
     public ChannelControlHandler(Consumer<Channel> addChannelConsumer,
-                               Consumer<Channel> removeChannelConsumer) {
+                               Consumer<Channel> removeChannelConsumer,
+                                 Consumer<ChannelHandlerContext> channelAddConsumer,
+                                 Consumer<ChannelHandlerContext> channelRemoveConsumer) {
         super();
         this.addChannelConsumer = addChannelConsumer;
         this.removeChannelConsumer = removeChannelConsumer;
+        this.channelAddConsumer = channelAddConsumer;
+        this.channelRemoveConsumer = channelRemoveConsumer;
     }
 
     @Override
@@ -51,12 +57,14 @@ public class ChannelControlHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         addChannelConsumer.accept(ctx.channel());
+        channelAddConsumer.accept(ctx);
         super.handlerAdded(ctx);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         removeChannelConsumer.accept(ctx.channel());
+        channelRemoveConsumer.accept(ctx);
         super.handlerRemoved(ctx);
     }
 }

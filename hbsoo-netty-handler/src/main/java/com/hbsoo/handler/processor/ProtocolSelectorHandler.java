@@ -45,18 +45,24 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
     private final Set<ServerProtocolType> serverProtocolTypes;
     private final boolean heartbeatCheck;
     private final boolean handshakerCheck;
+    private final Consumer<ChannelHandlerContext> channelAddConsumer;
+    private final Consumer<ChannelHandlerContext> channelRemoveConsumer;
 
     public ProtocolSelectorHandler(ServerProtocolType[] types,
                                    Consumer<Channel> addChannelConsumer,
                                    Consumer<Channel> removeChannelConsumer,
                                    boolean heartbeatCheck,
-                                   boolean handshakerCheck) {
+                                   boolean handshakerCheck,
+                                   Consumer<ChannelHandlerContext> channelAddConsumer,
+                                   Consumer<ChannelHandlerContext> channelRemoveConsumer) {
         this.serverProtocolTypes = new HashSet<>();
         this.serverProtocolTypes.addAll(Arrays.asList(types));
         this.addChannelConsumer = addChannelConsumer;
         this.removeChannelConsumer = removeChannelConsumer;
         this.heartbeatCheck = heartbeatCheck;
         this.handshakerCheck = handshakerCheck;
+        this.channelAddConsumer = channelAddConsumer;
+        this.channelRemoveConsumer = channelRemoveConsumer;
     }
 
     /**
@@ -84,7 +90,11 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
             addHandsakerHandler(pipeline);
             addCustomProtocolHandlers(pipeline);
         } else {
-            pipeline.addLast(new ChannelControlHandler(addChannelConsumer, removeChannelConsumer));
+            pipeline.addLast(new ChannelControlHandler(
+                    addChannelConsumer,
+                    removeChannelConsumer,
+                    channelAddConsumer,
+                    channelRemoveConsumer));
             if (isWebSocketUrl(in)) {
                 final boolean containsWebsocket = serverProtocolTypes.contains(WEBSOCKET);
                 if (containsWebsocket) {
@@ -116,7 +126,10 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
             pipeline.addLast(new HBSServerHandshaker(addChannelConsumer, removeChannelConsumer));
         } else {
             pipeline.channel().attr(Constants.HANDSHAKE_KEY).set(true);
-            pipeline.addLast(new ChannelControlHandler(addChannelConsumer, removeChannelConsumer));
+            pipeline.addLast(new ChannelControlHandler(addChannelConsumer,
+                    removeChannelConsumer,
+                    channelAddConsumer,
+                    channelRemoveConsumer));
         }
     }
 
