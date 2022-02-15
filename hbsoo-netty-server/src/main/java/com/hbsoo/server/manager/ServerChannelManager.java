@@ -34,13 +34,12 @@ public final class ServerChannelManager {
     public static void remove(Channel... channels) {
         for (Channel channel : channels) {
             ALL_CHANNEL.remove(channel.id().asLongText());
-        }
-        for (Channel channel : channels) {
             USER_ALL_CHANNEL.entrySet()
                     .removeIf(e ->
                             channel.id().asLongText()
-                            .equals(e.getValue().id().asLongText())
+                                    .equals(e.getValue().id().asLongText())
                     );
+            channel.close();
         }
     }
 
@@ -77,6 +76,10 @@ public final class ServerChannelManager {
         if (Objects.nonNull(channel)) {
             channel.writeAndFlush(msg);
         }
+    }
+
+    public static void sendMsg2All(Object msg) {
+        USER_ALL_CHANNEL.values().forEach(channel -> channel.writeAndFlush(msg));
     }
 
     /**
