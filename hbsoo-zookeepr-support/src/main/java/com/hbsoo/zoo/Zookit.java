@@ -43,6 +43,13 @@ public class Zookit {
 
 
     /**
+     * 客户端连接状态
+     */
+    public boolean isConnect() {
+        return curatorFramework.getZookeeperClient().isConnected();
+    }
+
+    /**
      * 检查 zookeeper 客户端状态
      *
      * @return org.apache.curator.framework.imps.CuratorFrameworkState 状态
