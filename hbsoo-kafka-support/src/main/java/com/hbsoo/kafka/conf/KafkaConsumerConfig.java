@@ -49,10 +49,10 @@ public class KafkaConsumerConfig {
         props.put(
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300_000);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300_000);//300s
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);
-        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 1);
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 1);
+        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 5);//5ms
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 10240);//10k
         props.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, 52428800);//50M
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
