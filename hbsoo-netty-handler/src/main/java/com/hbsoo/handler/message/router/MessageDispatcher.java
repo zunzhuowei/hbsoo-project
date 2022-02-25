@@ -34,10 +34,6 @@ public final class MessageDispatcher {
     //参数初始化
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
-    /**
-     * 延迟队列
-     */
-    static BlockingQueue<MessageTask> queue = new DelayQueue<>();
     /***
      * 线程池
      */
@@ -69,49 +65,18 @@ public final class MessageDispatcher {
     /**
      * 消息转发
      *
-     * @param delaySecond  延迟时间（秒）数
-     * @param channel      消息管道
-     * @param msg          消息内容
-     * @param protocolType 协议类型
-     */
-    public static void dispatchMsg(long delaySecond, Channel channel, Object msg, ServerProtocolType protocolType) {
-        dispatchMsg(new MessageTask(delaySecond).setChannel(channel).setProtocolType(protocolType).setMsg(msg));
-    }
-
-    /**
-     * 消息转发
-     *
      * @param messageTask 消息任务
      */
     public static void dispatchMsg(MessageTask messageTask) {
-        //executorService.execute(() -> {
-        try {
-            queue.put(messageTask);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //});
+        executorService.execute(() -> {
+            final Channel channel = messageTask.getChannel();
+            final Object msg = messageTask.getMsg();
+            final ServerProtocolType protocolType = messageTask.getProtocolType();
+            consumptionMessage(channel, msg, protocolType);
+            //queue.put(messageTask);
+        });
     }
 
-    /**
-     * 消费消息
-     */
-    static {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    // 从队列中获取任务，并执行任务
-                    MessageTask task = queue.take();
-                    final Channel channel = task.getChannel();
-                    final Object msg = task.getMsg();
-                    final ServerProtocolType protocolType = task.getProtocolType();
-                    executorService.execute(() -> consumptionMessage(channel, msg, protocolType));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
     /**
      * 消费消息

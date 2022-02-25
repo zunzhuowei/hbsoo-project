@@ -15,9 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 @Accessors(chain = true)
-public final class MessageTask implements Delayed, Serializable {
+public final class MessageTask {
 
-    private final long timeToRun;
 
     private ServerProtocolType protocolType;
 
@@ -25,29 +24,5 @@ public final class MessageTask implements Delayed, Serializable {
 
     private Object msg;
 
-
-    public MessageTask() {
-        this.timeToRun = 0L;
-    }
-
-    /**
-     * 延迟秒数
-     * @param timeLeft 延迟时间(秒)
-     */
-    public MessageTask(long timeLeft) {
-        this.timeToRun = (timeLeft * 1000L) + System.currentTimeMillis();
-    }
-
-    @Override
-    public long getDelay(TimeUnit unit) {
-        long diff = timeToRun - System.currentTimeMillis();
-        return unit.convert(diff, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public int compareTo(Delayed o) {
-        long gap = this.getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS);
-        return Long.valueOf(gap).intValue();
-    }
 
 }

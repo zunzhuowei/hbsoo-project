@@ -55,16 +55,6 @@ public interface MessageRouter<MSG> {
         MessageDispatcher.dispatchMsg(channel, msg, getProtocolType());
     }
 
-    /**
-     * 转发消息 带延迟时间（秒）
-     * @param delaySecond 延迟时间
-     * @param channel 转发到哪个消息管道
-     * @param msg 消息内容
-     */
-    default void forward(long delaySecond, Channel channel, MSG msg){
-        MessageDispatcher.dispatchMsg(delaySecond, channel, msg, getProtocolType());
-    }
-
 
 
 }
