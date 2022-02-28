@@ -12,7 +12,7 @@ import io.netty.channel.Channel;
  */
 public abstract class TextWebsocketMessageRouterAdapter implements MessageRouter<HBSMessage<String>> {
 
-    protected Channel channel;
+    //protected Channel channel;
 
     @Override
     public ServerProtocolType getProtocolType() {
@@ -21,11 +21,10 @@ public abstract class TextWebsocketMessageRouterAdapter implements MessageRouter
 
     @Override
     public void handler(Channel channel, HBSMessage<String> stringHBSMessage) {
-        this.channel = channel;
         final MsgHeader header = stringHBSMessage.getHeader();
         final int msgType = header.getMsgType();
         final String content = stringHBSMessage.getContent();
-        handler(msgType, content);
+        handler(channel,msgType, content);
     }
 
     /**
@@ -37,19 +36,13 @@ public abstract class TextWebsocketMessageRouterAdapter implements MessageRouter
         channel.writeAndFlush(message);
     }
 
-    /**
-     * 当前消息管道发送消息
-     * @param message 消息
-     */
-    protected void sendMsg(HBSMessage<String> message) {
-        sendMsg(channel, message);
-    }
 
     /**
      * 处理消息
+     *
      * @param msgType 消息类型
      * @param content 消息内容
      */
-    protected abstract void handler(int msgType, String content);
+    protected abstract void handler(Channel channel, int msgType, String content);
 
 }
