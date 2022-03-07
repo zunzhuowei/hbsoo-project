@@ -95,4 +95,8 @@ public final class ServerChannelManager {
         }
     }
 
+    public static Map<String, Channel> getAllChannel() {
+        return ALL_CHANNEL;
+    }
+
 }
