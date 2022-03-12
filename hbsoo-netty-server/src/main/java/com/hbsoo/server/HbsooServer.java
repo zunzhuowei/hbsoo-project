@@ -98,7 +98,11 @@ public class HbsooServer {
                                 channelRemoveConsumer));
                     }
                 }
-        );
+        )
+        .option(ChannelOption.TCP_NODELAY, true)
+        .option(ChannelOption.SO_KEEPALIVE, true)
+        .option(ChannelOption.SO_BACKLOG, 128)
+        ;
         return this;
     }
 
