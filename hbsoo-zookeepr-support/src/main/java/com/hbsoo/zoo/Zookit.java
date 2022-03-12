@@ -67,12 +67,13 @@ public class Zookit {
      * 关闭 zookeeper 客户端链接
      */
     public void closeClientConnect() {
-        CuratorFrameworkState state = this.checkClientState();
+        curatorFramework.close();
+        /*CuratorFrameworkState state = this.checkClientState();
         if (state == CuratorFrameworkState.STOPPED) {
             log.warn("closeClientConnect zookeeper client had been close!");
         } else {
             curatorFramework.close();
-        }
+        }*/
     }
 
 
