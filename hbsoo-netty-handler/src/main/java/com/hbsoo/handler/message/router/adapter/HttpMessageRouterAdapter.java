@@ -80,6 +80,26 @@ public abstract class HttpMessageRouterAdapter implements MessageRouter<FullHttp
         return HttpUtils.resp(bytes, RespType.HTML, true, HttpResponseStatus.OK).get();
     }
 
+    public DefaultFullHttpResponse js(String html) {
+        byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+        return HttpUtils.resp(bytes, RespType.JS, true, HttpResponseStatus.OK).get();
+    }
+
+    public DefaultFullHttpResponse css(String html) {
+        byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+        return HttpUtils.resp(bytes, RespType.CSS, true, HttpResponseStatus.OK).get();
+    }
+
+    public DefaultFullHttpResponse jpg(String html) {
+        byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+        return HttpUtils.resp(bytes, RespType.JPG, true, HttpResponseStatus.OK).get();
+    }
+
+    public DefaultFullHttpResponse png(String html) {
+        byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+        return HttpUtils.resp(bytes, RespType.PNG, true, HttpResponseStatus.OK).get();
+    }
+
     /**
      * json 返回值
      *

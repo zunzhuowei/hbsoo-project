@@ -35,7 +35,12 @@ public final class HttpUtils {
             if (Objects.nonNull(respContent)) {
                 response.content().writeBytes(respContent);
             }
-            String contentType = type == RespType.JSON ? "application/json;charset=utf-8" :
+            String contentType =
+                    type == RespType.JSON ? "application/json;charset=utf-8" :
+                    type == RespType.JS ? "application/javascript" :
+                    type == RespType.CSS ? "text/css" :
+                    type == RespType.JPG ? "image/jpeg" :
+                    type == RespType.PNG ? "image/png" :
                     "text/html;charset=utf-8";
             response.headers().add(CONTENT_TYPE, contentType);
             response.headers().add(CONTENT_LENGTH, response.content().readableBytes());

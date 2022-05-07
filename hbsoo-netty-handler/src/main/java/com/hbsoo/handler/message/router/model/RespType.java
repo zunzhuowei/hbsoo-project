@@ -7,6 +7,10 @@ public enum RespType {
 
     JSON,
     HTML,
+    JS,
+    CSS,
+    JPG,
+    PNG,
     ;
 
 }
