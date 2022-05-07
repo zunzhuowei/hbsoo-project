@@ -224,7 +224,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
     private void addWebSocketHandlers(ChannelPipeline pipeline) {
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(8192));
-        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX));
+        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX, null, false, 65535 * 100));
         pipeline.addLast(new HBSTextWebsocketEncoder());
         pipeline.addLast(new HBSBinaryWebsocketEncoder());
         pipeline.addLast(new HBSWebsocketHandler());
