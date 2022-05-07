@@ -138,9 +138,9 @@ public class HbsooServer {
                     }
                 }
         )
-        .option(ChannelOption.TCP_NODELAY, true)
-        .option(ChannelOption.SO_KEEPALIVE, true)
-        .option(ChannelOption.SO_BACKLOG, 128)
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childOption(ChannelOption.SO_KEEPALIVE, true)
+        .childOption(ChannelOption.SO_BACKLOG, 128)
         ;
         return this;
     }
