@@ -14,9 +14,21 @@ import java.util.function.Consumer;
 @Slf4j
 public class ChannelControlHandler extends ChannelInboundHandlerAdapter {
 
+    /**
+     * 管道加入 channelManager 消费函数
+     */
     private final Consumer<Channel> addChannelConsumer;
+    /**
+     * 管道从 channelManager 移除消费函数
+     */
     private final Consumer<Channel> removeChannelConsumer;
+    /**
+     * 监听管道连接添加的消费函数
+     */
     private final Consumer<ChannelHandlerContext> channelAddConsumer;
+    /**
+     * 监听管道移除的消费函数
+     */
     private final Consumer<ChannelHandlerContext> channelRemoveConsumer;
 
     public ChannelControlHandler(Consumer<Channel> addChannelConsumer,

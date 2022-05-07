@@ -39,14 +39,38 @@ import static com.hbsoo.handler.constants.ServerProtocolType.*;
 @Slf4j
 public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
 
-
+    /**
+     * 管道加入 channelManager 消费函数
+     */
     private final Consumer<Channel> addChannelConsumer;
+    /**
+     * 管道从 channelManager 移除消费函数
+     */
     private final Consumer<Channel> removeChannelConsumer;
+    /**
+     * 服务端需要支持的协议类型
+     */
     private final Set<ServerProtocolType> serverProtocolTypes;
+    /**
+     * 服务端是否开启心跳检查，开启心跳检查，如果客户端在规定时间没有心跳包，服务端会断掉连接
+     */
     private final boolean heartbeatCheck;
+    /**
+     * 管道连接握手检查开关
+     */
     private final boolean handshakerCheck;
+    /**
+     * 监听管道连接添加的消费函数
+     */
     private final Consumer<ChannelHandlerContext> channelAddConsumer;
+    /**
+     * 监听管道移除的消费函数
+     */
     private final Consumer<ChannelHandlerContext> channelRemoveConsumer;
+    /**
+     * 可选参数
+     */
+    private final Map<String, Object> optionParams;
 
     public ProtocolSelectorHandler(ServerProtocolType[] types,
                                    Consumer<Channel> addChannelConsumer,
@@ -54,7 +78,8 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
                                    boolean heartbeatCheck,
                                    boolean handshakerCheck,
                                    Consumer<ChannelHandlerContext> channelAddConsumer,
-                                   Consumer<ChannelHandlerContext> channelRemoveConsumer) {
+                                   Consumer<ChannelHandlerContext> channelRemoveConsumer,
+                                   Map<String, Object> optionParams) {
         this.serverProtocolTypes = new HashSet<>();
         this.serverProtocolTypes.addAll(Arrays.asList(types));
         this.addChannelConsumer = addChannelConsumer;
@@ -63,6 +88,7 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         this.handshakerCheck = handshakerCheck;
         this.channelAddConsumer = channelAddConsumer;
         this.channelRemoveConsumer = channelRemoveConsumer;
+        this.optionParams = optionParams;
     }
 
     /**
@@ -154,8 +180,10 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
         final boolean containsWebsocketProtobuf = serverProtocolTypes.contains(WEBSOCKET_PROTOBUF);
         if (containsWebsocketProtobuf) {
             pipeline.addLast(new HttpServerCodec());
-            pipeline.addLast(new HttpObjectAggregator(8192));
-            pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX));
+            Object maxContentLength = optionParams.getOrDefault("httpObjectAggregator.maxContentLength", 8192);
+            pipeline.addLast(new HttpObjectAggregator((int) maxContentLength));
+            Object maxFrameSize = optionParams.getOrDefault("websocket.maxFrameSize", 65535);
+            pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX, null, false, (int) maxFrameSize));
             pipeline.addLast(new HBSWebsocketProtobufEncoder());
             pipeline.addLast(new HBSWebsocketProtobufHandler());
         }
@@ -223,8 +251,10 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      */
     private void addWebSocketHandlers(ChannelPipeline pipeline) {
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(8192));
-        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX, null, false, 65535 * 100));
+        Object maxContentLength = optionParams.getOrDefault("httpObjectAggregator.maxContentLength", 8192);
+        pipeline.addLast(new HttpObjectAggregator((int) maxContentLength));
+        Object maxFrameSize = optionParams.getOrDefault("websocket.maxFrameSize", 65535);
+        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PREFIX, null, false, (int) maxFrameSize));
         pipeline.addLast(new HBSTextWebsocketEncoder());
         pipeline.addLast(new HBSBinaryWebsocketEncoder());
         pipeline.addLast(new HBSWebsocketHandler());
@@ -238,7 +268,8 @@ public final class ProtocolSelectorHandler extends ByteToMessageDecoder {
      */
     private void addHTTPHandlers(ChannelPipeline pipeline) {
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(65535));
+        Object maxContentLength = optionParams.getOrDefault("httpObjectAggregator.maxContentLength", 8192);
+        pipeline.addLast(new HttpObjectAggregator((int) maxContentLength));
         pipeline.addLast(new HBSHttpHandler());
     }
 
